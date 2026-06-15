@@ -149,6 +149,13 @@ body {
   background-clip: text;
 }
 
+.gradient-text-hero {
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* ── Premium Button ──────────────────────────────────────── */
 .btn-primary {
   display: inline-flex;

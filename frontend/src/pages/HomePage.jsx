@@ -121,7 +121,7 @@ function HomePage() {
             {/* Heading */}
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.05] text-white mb-6">
               Find Your{" "}
-              <span className="gradient-text-blue">Perfect</span>
+              <span className="gradient-text-hero">Perfect</span>
               <br />
               <span className="text-white">Escape</span>
             </h1>
