@@ -113,7 +113,7 @@ function HomePage() {
         <div className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-36 sm:py-24 w-full transition-all duration-700 ${heroLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <div className="max-w-3xl">
             {/* Pill badge */}
-            <div className="hidden sm:inline-flex items-center gap-2 glass text-blue-300 text-xs font-semibold px-4 py-2 rounded-full mb-5 border border-white/10">
+            <div className="hidden sm:inline-flex items-center gap-2 glass-dark text-blue-200 text-xs font-semibold px-4 py-2 rounded-full mb-5 border border-white/10">
               <Sparkles className="w-3.5 h-3.5 animate-pulse text-blue-400" />
               <span>Discover Verified Luxury Stays Worldwide</span>
             </div>
@@ -161,7 +161,7 @@ function HomePage() {
                 <button
                   key={place}
                   onClick={() => navigate(`/explore?query=${place}`)}
-                  className="glass text-white/80 text-xs px-3 py-1.5 rounded-full hover:bg-white/20 transition-all duration-200 border border-white/10"
+                  className="glass-dark text-white/90 text-xs px-3.5 py-1.5 rounded-full hover:bg-white/20 transition-all duration-200 border border-white/10"
                 >
                   {place}
                 </button>
@@ -173,11 +173,11 @@ function HomePage() {
         {/* Stats bar */}
         <div className="absolute bottom-0 left-0 right-0">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="glass rounded-t-2xl px-4 sm:px-8 py-4 grid grid-cols-4 gap-2 sm:gap-4 border-t border-white/10">
+            <div className="glass-dark rounded-t-2xl px-4 sm:px-8 py-4 grid grid-cols-4 gap-2 sm:gap-4 border-t border-white/10">
               {STATS.map((s) => (
                 <div key={s.label} className="text-center">
                   <div className="text-base sm:text-2xl font-black text-white">{s.value}</div>
-                  <div className="text-[10px] sm:text-xs text-white/60 font-medium mt-0.5 leading-tight">{s.label}</div>
+                  <div className="text-[10px] sm:text-xs text-white/70 font-medium mt-0.5 leading-tight">{s.label}</div>
                 </div>
               ))}
             </div>
