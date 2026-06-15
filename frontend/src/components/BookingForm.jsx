@@ -1,263 +1,335 @@
 import { useState } from "react";
 import {
-  parseISO,
-  isBefore,
-  isSameDay,
-  addDays,
-  startOfDay,
-  setHours,
-  setMinutes,
-  isAfter,
+  parseISO, isBefore, isSameDay, addDays,
+  startOfDay, setHours, setMinutes, isAfter, differenceInCalendarDays,
 } from "date-fns";
 import { useBookingStore } from "../stores/useBookingStore";
-import { useParams, useNavigate } from "react-router-dom"; // ⬅️ added useNavigate
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  User, Phone, CreditCard as IdCard, Calendar, AlertCircle,
+  CheckCircle, ArrowRight, Info, Shield,
+} from "lucide-react";
 
-export default function BookingForm({
-  selectedDates,
-  setSelectedDates,
-  bookedDates,
-  homeId,
-}) {
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    idCard: "",
-    acceptPolicy: false,
-  });
+export default function BookingForm({ selectedDates, setSelectedDates, bookedDates }) {
+  const [form, setForm] = useState({ name: "", phone: "", idCard: "", acceptPolicy: false });
+  const [errors, setErrors] = useState({});
+  const [submitMsg, setSubmitMsg] = useState("");
+  const [submitError, setSubmitError] = useState("");
 
   const { id } = useParams();
-  const navigate = useNavigate(); // ⬅️ init
-
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
   const { createBooking, loading } = useBookingStore();
 
-  // Check if a single date is already booked
+  /* ── Helpers ────────────────────────────────── */
   const isBooked = (dateStr) => {
     if (!dateStr) return false;
     const date = parseISO(dateStr);
-    return bookedDates.some((booked) => isSameDay(parseISO(booked), date));
+    return bookedDates.some((b) => isSameDay(parseISO(b), date));
   };
 
-  // Validate date according to booking rules
   const isDateSelectable = (date) => {
     const now = new Date();
     const today = startOfDay(now);
-    const cutoffTime = setMinutes(setHours(today, 14), 0); // 2:00 PM
-
-    if (isBefore(date, today)) return false; // can't select past dates
-    if (isSameDay(date, today) && isAfter(now, cutoffTime)) return false; // same day after 2 PM
+    const cutoff = setMinutes(setHours(today, 14), 0);
+    if (isBefore(date, today)) return false;
+    if (isSameDay(date, today) && isAfter(now, cutoff)) return false;
     return true;
   };
 
+  const nightCount =
+    selectedDates.startDate && selectedDates.endDate
+      ? Math.max(0, differenceInCalendarDays(parseISO(selectedDates.endDate), parseISO(selectedDates.startDate)))
+      : 0;
+
+  /* ── Date Validation ────────────────────────── */
   const handleDateChange = (e) => {
     const { name, value } = e.target;
     let newDates = { ...selectedDates, [name]: value };
-    setError("");
-    setSuccess("");
+    setErrors((prev) => ({ ...prev, date: "" }));
+    setSubmitError("");
 
+    if (!value) { setSelectedDates(newDates); return; }
     const date = parseISO(value);
 
-    // 🚫 Past date or same-day after 2 PM
     if (!isDateSelectable(date)) {
-      setError(
-        "Invalid date. You cannot select past dates or today after 2:00 PM."
-      );
-      if (name === "startDate") {
-        newDates.startDate = "";
-        newDates.endDate = "";
-      } else {
-        newDates.endDate = "";
-      }
+      setErrors((prev) => ({ ...prev, date: "Invalid date — cannot select past dates or today after 2:00 PM." }));
+      if (name === "startDate") { newDates.startDate = ""; newDates.endDate = ""; }
+      else newDates.endDate = "";
       setSelectedDates(newDates);
       return;
     }
 
-    // 🚫 Block only check-in if already booked
     if (name === "startDate" && isBooked(value)) {
-      setError(`The selected check-in date (${value}) is already booked`);
-      newDates.startDate = "";
-      newDates.endDate = "";
+      setErrors((prev) => ({ ...prev, date: `Check-in date ${value} is already booked.` }));
+      newDates.startDate = ""; newDates.endDate = "";
       setSelectedDates(newDates);
       return;
     }
 
-    // Validate range if both start and end are selected
     if (newDates.startDate && newDates.endDate) {
       const start = parseISO(newDates.startDate);
       const end = parseISO(newDates.endDate);
-
       if (!isBefore(start, end)) {
-        setError("Check-in date must be before check-out date");
+        setErrors((prev) => ({ ...prev, date: "Check-out must be after check-in." }));
         newDates.endDate = "";
         setSelectedDates(newDates);
         return;
       }
-
-      // Check nights in between start and end
-      let current = new Date(start);
-      const endExclusive = new Date(end);
-      while (current < endExclusive) {
-        if (bookedDates.some((b) => isSameDay(parseISO(b), current))) {
-          setError(
-            "Your selected date range includes nights that are already booked"
-          );
+      let cur = new Date(start);
+      while (cur < end) {
+        if (bookedDates.some((b) => isSameDay(parseISO(b), cur))) {
+          setErrors((prev) => ({ ...prev, date: "Your date range overlaps with existing bookings." }));
           newDates.endDate = "";
           setSelectedDates(newDates);
           return;
         }
-        current = addDays(current, 1);
+        cur = addDays(cur, 1);
       }
     }
-
     setSelectedDates(newDates);
   };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  /* ── Form Validation ────────────────────────── */
+  const validate = () => {
+    const newErrors = {};
+    const nameTrimmed = form.name.trim();
+    if (!nameTrimmed) newErrors.name = "Full name is required.";
+    else if (nameTrimmed.length < 3) newErrors.name = "Name must be at least 3 characters.";
+    else if (!/^[a-zA-Z\s'-]+$/.test(nameTrimmed)) newErrors.name = "Name may only contain letters, spaces, hyphens or apostrophes.";
+
+    const phoneTrimmed = form.phone.trim();
+    if (!phoneTrimmed) newErrors.phone = "Phone number is required.";
+    else if (!/^\+?[0-9\s\-()]{7,15}$/.test(phoneTrimmed)) newErrors.phone = "Enter a valid phone number (7–15 digits).";
+
+    const idTrimmed = form.idCard.trim();
+    if (!idTrimmed) newErrors.idCard = "ID card number is required.";
+    else if (idTrimmed.length < 5) newErrors.idCard = "ID must be at least 5 characters.";
+
+    if (!selectedDates.startDate || !selectedDates.endDate)
+      newErrors.date = "Please select both check-in and check-out dates.";
+
+    if (!form.acceptPolicy) newErrors.policy = "You must accept the booking policy.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  // Generate booked nights array excluding check-out date
-  const generateBookedDates = (checkIn, checkOut) => {
-    const dates = [];
-    let current = new Date(checkIn);
-    const end = new Date(checkOut);
-
-    while (current < end) {
-      dates.push(new Date(current).toISOString().split("T")[0]);
-      current = addDays(current, 1);
+  /* ── Input handler ──────────────────────────── */
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    // Prevent non-numeric in phone
+    if (name === "phone") {
+      const cleaned = value.replace(/[^0-9\s\-()+]/g, "");
+      setForm((prev) => ({ ...prev, [name]: cleaned }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
     }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
 
+  /* ── Submit ─────────────────────────────────── */
+  const generateBookedNights = (checkIn, checkOut) => {
+    const dates = [];
+    let cur = new Date(checkIn);
+    const end = new Date(checkOut);
+    while (cur < end) {
+      dates.push(new Date(cur).toISOString().split("T")[0]);
+      cur = addDays(cur, 1);
+    }
     return dates;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+    setSubmitError(""); setSubmitMsg("");
+    if (!validate()) return;
 
-    if (!selectedDates.startDate || !selectedDates.endDate) {
-      setError("Please select both check-in and check-out dates");
-      return;
-    }
-
-    const bookedNights = generateBookedDates(
-      selectedDates.startDate,
-      selectedDates.endDate
-    );
-
-    const bookingPayload = {
+    const bookedNights = generateBookedNights(selectedDates.startDate, selectedDates.endDate);
+    const payload = {
       homeId: id,
-      guestName: form.name,
-      phone: form.phone,
-      idCard: form.idCard,
+      guestName: form.name.trim(),
+      phone: form.phone.trim(),
+      idCard: form.idCard.trim(),
       startDate: selectedDates.startDate,
       endDate: selectedDates.endDate,
       bookedDates: bookedNights,
     };
 
     try {
-      const result = await createBooking(bookingPayload);
+      const result = await createBooking(payload);
       const bookingId = result?.data?._id || result?.data?.id;
-
-      // Optional: brief success message before redirect
-      setSuccess("Booking created! Redirecting to payment…");
-
-      // ⬅️ Redirect to the payment page
-      // If your route is /payment/:bookingId, swap the path below accordingly.
-      navigate(`/user/payment/${bookingId}`);
+      setSubmitMsg("Booking created! Redirecting to payment…");
+      setTimeout(() => navigate(`/user/payment/${bookingId}`), 800);
     } catch (err) {
-      setError(err.message || "Failed to confirm booking");
-      return;
+      setSubmitError(err.message || "Failed to confirm booking. Please try again.");
     } finally {
-      // reset form fields (optional)
-      setForm({
-        name: "",
-        phone: "",
-        idCard: "",
-        acceptPolicy: false,
-      });
+      setForm({ name: "", phone: "", idCard: "", acceptPolicy: false });
       setSelectedDates({ startDate: "", endDate: "" });
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <input
-        type="text"
-        name="name"
-        placeholder="Full Name"
-        value={form.name}
-        onChange={handleChange}
-        className="w-full border rounded px-4 py-2"
-        required
-      />
-      <input
-        type="tel"
-        name="phone"
-        placeholder="Phone Number"
-        value={form.phone}
-        onChange={handleChange}
-        className="w-full border rounded px-4 py-2"
-        required
-      />
-      <input
-        type="text"
-        name="idCard"
-        placeholder="ID Card Number"
-        value={form.idCard}
-        onChange={handleChange}
-        className="w-full border rounded px-4 py-2"
-        required
-      />
-      <div className="flex gap-4">
+  /* ── Field Component ────────────────────────── */
+  const Field = ({ icon: Icon, id, name, type = "text", placeholder, value, onChange, error, disabled }) => (
+    <div>
+      <label htmlFor={id} className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+        {placeholder}
+      </label>
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <Icon className="h-4 w-4 text-gray-400" />
+        </div>
         <input
-          type="date"
-          name="startDate"
-          value={selectedDates.startDate}
-          onChange={handleDateChange}
-          className="border rounded px-4 py-2 w-full"
-          required
-        />
-        <input
-          type="date"
-          name="endDate"
-          value={selectedDates.endDate}
-          onChange={handleDateChange}
-          className="border rounded px-4 py-2 w-full"
-          required
+          id={id}
+          name={name}
+          type={type}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          placeholder={placeholder}
+          className={`input-premium pl-11 ${error ? "error" : ""} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         />
       </div>
+      {error && (
+        <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+          {error}
+        </p>
+      )}
+    </div>
+  );
 
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      {success && <p className="text-green-500 text-sm">{success}</p>}
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      {/* Guest info */}
+      <Field
+        icon={User} id="name" name="name" placeholder="Full Name"
+        value={form.name} onChange={handleChange} error={errors.name}
+      />
+      <Field
+        icon={Phone} id="phone" name="phone" type="tel" placeholder="Phone Number"
+        value={form.phone} onChange={handleChange} error={errors.phone}
+      />
+      <Field
+        icon={IdCard} id="idCard" name="idCard" placeholder="ID Card / Passport Number"
+        value={form.idCard} onChange={handleChange} error={errors.idCard}
+      />
 
-      <label className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          name="acceptPolicy"
-          checked={form.acceptPolicy}
-          onChange={handleChange}
-          required
-        />
-        <span className="text-sm text-gray-700">
-          I accept the booking policy
-        </span>
-      </label>
+      {/* Date pickers */}
+      <div>
+        <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+          Stay Dates
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { name: "startDate", label: "Check-in" },
+            { name: "endDate", label: "Check-out" },
+          ].map((d) => (
+            <div key={d.name}>
+              <div className="text-[10px] text-gray-400 font-medium mb-1">{d.label}</div>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Calendar className="h-4 w-4 text-gray-400" />
+                </div>
+                <input
+                  type="date"
+                  name={d.name}
+                  value={selectedDates[d.name]}
+                  onChange={handleDateChange}
+                  min={new Date().toISOString().split("T")[0]}
+                  className={`input-premium pl-10 text-sm ${errors.date ? "error" : ""}`}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        {errors.date && (
+          <p className="mt-2 text-xs text-red-600 flex items-center gap-1">
+            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+            {errors.date}
+          </p>
+        )}
+        {nightCount > 0 && !errors.date && (
+          <p className="mt-2 text-xs text-emerald-600 flex items-center gap-1 font-medium">
+            <CheckCircle className="w-3.5 h-3.5" />
+            {nightCount} night{nightCount !== 1 ? "s" : ""} selected
+          </p>
+        )}
+      </div>
 
+      {/* Policy */}
+      <div className="rounded-2xl bg-blue-50/70 border border-blue-100 p-4">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <div className="relative flex-shrink-0 mt-0.5">
+            <input
+              type="checkbox"
+              name="acceptPolicy"
+              checked={form.acceptPolicy}
+              onChange={handleChange}
+              className="sr-only"
+            />
+            <div
+              className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+                form.acceptPolicy
+                  ? "bg-blue-600 border-blue-600"
+                  : "bg-white border-gray-300"
+              }`}
+            >
+              {form.acceptPolicy && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+            </div>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-800">I accept the booking policy</p>
+            <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+              By confirming, you agree to our cancellation policy and terms of stay.
+            </p>
+          </div>
+        </label>
+        {errors.policy && (
+          <p className="mt-2 text-xs text-red-600 flex items-center gap-1">
+            <AlertCircle className="w-3.5 h-3.5" /> {errors.policy}
+          </p>
+        )}
+      </div>
+
+      {/* Feedback messages */}
+      {submitError && (
+        <div className="rounded-2xl bg-red-50 border border-red-100 p-4 flex gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-red-700">{submitError}</p>
+        </div>
+      )}
+      {submitMsg && (
+        <div className="rounded-2xl bg-emerald-50 border border-emerald-100 p-4 flex gap-3">
+          <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-emerald-700">{submitMsg}</p>
+        </div>
+      )}
+
+      {/* Submit */}
       <button
         type="submit"
-        className={`bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition ${
-          loading ? "opacity-50 cursor-not-allowed" : ""
-        }`}
         disabled={loading}
+        className="btn-primary w-full py-4 text-sm font-bold rounded-2xl"
+        style={{ borderRadius: "16px" }}
       >
-        {loading ? "Processing..." : "Confirm Booking"}
+        {loading ? (
+          <>
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            Processing…
+          </>
+        ) : (
+          <>
+            <Shield className="w-4 h-4" />
+            Confirm & Proceed to Payment
+            <ArrowRight className="w-4 h-4" />
+          </>
+        )}
       </button>
+
+      <p className="text-center text-xs text-gray-400 flex items-center justify-center gap-1">
+        <Info className="w-3.5 h-3.5" />
+        You won't be charged yet — payment is on the next step.
+      </p>
     </form>
   );
 }

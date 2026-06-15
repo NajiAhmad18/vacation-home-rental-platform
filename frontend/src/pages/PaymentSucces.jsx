@@ -1,8 +1,7 @@
-// src/pages/PaymentSuccess.jsx
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useMemo } from "react";
+import { CheckCircle, Home, Download, FileText, ExternalLink, ArrowLeft, Sparkles } from "lucide-react";
 
-// Build API base for the HTML invoice link
 const API_BASE =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ||
   process.env.REACT_APP_API_BASE_URL ||
@@ -17,9 +16,9 @@ export default function PaymentSuccess() {
   const navigate = useNavigate();
 
   const paymentId = state?.paymentId;
-  const invoiceUrl = state?.invoiceUrl; // server-generated PDF (if enabled)
-  const receiptUrl = state?.receiptUrl; // Stripe receipt URL (may be null)
-  const amount = state?.amount;         // optional, passed from PaymentForm navigate()
+  const invoiceUrl = state?.invoiceUrl;
+  const receiptUrl = state?.receiptUrl;
+  const amount = state?.amount;
   const currency = (state?.currency || "USD").toUpperCase();
 
   const tailwindInvoiceUrl = useMemo(
@@ -27,98 +26,81 @@ export default function PaymentSuccess() {
     [paymentId]
   );
 
-  // If someone hits this page directly without state, nudge them back
   if (!paymentId && !invoiceUrl && !receiptUrl) {
     return (
-      <div className="min-h-[60vh] grid place-items-center bg-slate-50 px-4">
-        <div className="max-w-md text-center">
-          <h1 className="text-xl font-semibold text-slate-900">Nothing to show here</h1>
-          <p className="mt-2 text-slate-600">
-            This page is shown after a successful payment. If you reached it directly, head back.
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--surface)" }}>
+        <div className="card p-10 text-center max-w-md w-full animate-scale-in">
+          <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Sparkles className="w-7 h-7 text-gray-400" />
+          </div>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">Nothing to show here</h1>
+          <p className="text-gray-500 text-sm mb-6">
+            This page appears after a successful payment. If you reached it directly, head back.
           </p>
           <button
-            onClick={() => navigate(-1)}
-            className="mt-4 rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+            onClick={() => navigate("/")}
+            className="btn-primary px-6 py-3 text-sm mx-auto"
           >
-            ← Go Back
+            <Home className="w-4 h-4" /> Back to Home
           </button>
         </div>
       </div>
     );
   }
 
-  const copyId = () => {
-    if (!paymentId) return;
-    navigator.clipboard.writeText(paymentId).catch(() => {});
-  };
-
   return (
-    <div className="min-h-[80vh] bg-slate-50 px-4 py-14">
-      <div className="mx-auto max-w-2xl">
-        {/* Success header card */}
-        <div className="relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
-          <div className="p-8">
-            <div className="flex items-start gap-4">
-              <div className="grid h-12 w-12 place-items-center rounded-xl bg-green-100">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-7 w-7 text-green-600"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10.28 15.22a.75.75 0 0 1-1.06 0l-2.47-2.47a.75.75 0 1 1 1.06-1.06l1.94 1.94 5.47-5.47a.75.75 0 0 1 1.06 1.06l-6 6Z"
-                    clipRule="evenodd"
-                  />
-                  <path
-                    fillRule="evenodd"
-                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm0 1.5a8.25 8.25 0 1 0 0 16.5 8.25 8.25 0 0 0 0-16.5Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h1 className="text-2xl font-semibold text-slate-900">
-                  Payment successful!
-                </h1>
-                <p className="mt-2 text-slate-600">
-                  Your booking is confirmed. You can download your invoice and view your receipt below.
-                </p>
+    <div className="min-h-screen flex items-center justify-center px-4 py-16" style={{ background: "var(--surface)" }}>
+      <div className="max-w-lg w-full animate-scale-in">
 
-                {/* Amount paid chip */}
-                {typeof amount === "number" && (
-                  <div className="mt-4 inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700 ring-1 ring-emerald-200">
-                    Amount Paid: {fmt(amount, currency)}
-                  </div>
-                )}
+        {/* ── Success Card ─────────────────────────── */}
+        <div className="card overflow-hidden shadow-xl">
+          {/* Top gradient bar */}
+          <div className="h-1.5 bg-gradient-to-r from-emerald-400 via-green-500 to-teal-400" />
+
+          <div className="p-8 sm:p-10">
+            {/* Icon + heading */}
+            <div className="flex flex-col items-center text-center mb-8">
+              <div className="relative w-20 h-20 mb-5">
+                {/* Outer ring */}
+                <div className="absolute inset-0 rounded-full bg-emerald-100 animate-pulse-soft" />
+                <div className="relative w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center border-4 border-emerald-100">
+                  <CheckCircle className="w-10 h-10 text-emerald-500 fill-emerald-50" />
+                </div>
               </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-gray-900 mb-2">
+                Payment Successful! 🎉
+              </h1>
+              <p className="text-gray-500 text-sm leading-relaxed max-w-sm">
+                Your booking is confirmed. We've sent a confirmation to your email address.
+              </p>
+
+              {/* Amount chip */}
+              {typeof amount === "number" && (
+                <div className="mt-4 pill pill-green text-sm px-4 py-2">
+                  ✅ {fmt(amount, currency)} Paid
+                </div>
+              )}
             </div>
 
-            {/* Summary row */}
-            {(amount || paymentId) && (
-              <div className="mt-6 grid gap-3 rounded-xl bg-slate-50 p-4 text-sm text-slate-700 ring-1 ring-slate-200">
-                {paymentId && (
-                  <div className="flex items-center justify-between gap-3">
-                    <span>Payment ID</span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs text-slate-500 break-all">{paymentId}</span>
-                    </div>
-                  </div>
-                )}
+            {/* Payment ID row */}
+            {paymentId && (
+              <div className="bg-gray-50 rounded-2xl p-4 mb-6 border border-gray-100">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Payment Reference</p>
+                <p className="font-mono text-sm text-gray-800 break-all">{paymentId}</p>
               </div>
             )}
 
-            {/* Actions */}
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            {/* ── Action Buttons ─────────────────── */}
+            <div className="space-y-3 mb-6">
               {invoiceUrl && (
                 <a
                   href={invoiceUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-slate-800"
+                  className="flex items-center justify-center gap-2.5 w-full py-3.5 px-5 rounded-2xl bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition-all shadow-md"
                 >
-                  <span className="mr-2">📥</span> Download Invoice (PDF)
+                  <Download className="w-4 h-4" />
+                  Download Invoice (PDF)
                 </a>
               )}
 
@@ -127,9 +109,10 @@ export default function PaymentSuccess() {
                   href={tailwindInvoiceUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-slate-900 ring-1 ring-slate-300 hover:bg-slate-50"
+                  className="flex items-center justify-center gap-2.5 w-full py-3.5 px-5 rounded-2xl border-2 border-gray-200 bg-white text-gray-800 text-sm font-semibold hover:bg-gray-50 transition-all"
                 >
-                  <span className="mr-2">📄</span> View Invoice
+                  <FileText className="w-4 h-4 text-blue-600" />
+                  View Invoice Online
                 </a>
               )}
 
@@ -138,26 +121,43 @@ export default function PaymentSuccess() {
                   href={receiptUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-slate-900 ring-1 ring-slate-300 hover:bg-slate-50"
+                  className="flex items-center justify-center gap-2.5 w-full py-3.5 px-5 rounded-2xl border-2 border-gray-200 bg-white text-gray-800 text-sm font-semibold hover:bg-gray-50 transition-all"
                 >
-                  <span className="mr-2">🧾</span> View Stripe Receipt
+                  <ExternalLink className="w-4 h-4 text-violet-600" />
+                  View Stripe Receipt
                 </a>
               )}
+            </div>
 
+            {/* Divider */}
+            <div className="divider" />
 
+            {/* Back home */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                to="/"
+                className="btn-primary flex-1 py-3 text-sm justify-center"
+              >
+                <Home className="w-4 h-4" />
+                Back to Home
+              </Link>
+              <Link
+                to="/explore"
+                className="flex-1 flex items-center justify-center gap-2 py-3 px-5 rounded-2xl border-2 border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all"
+              >
+                Browse More Stays
+              </Link>
             </div>
           </div>
-
-          {/* Subtle bottom border accent */}
-          <div className="h-1 bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500" />
         </div>
 
-        {/* Back link */}
-        <div className="mt-6 text-center">
-          <Link to="/" className="text-blue-600 underline">
-            ← Back to Home
+        {/* Support note */}
+        <p className="text-center text-xs text-gray-400 mt-5">
+          Need help? Contact{" "}
+          <Link to="/contact" className="text-blue-600 font-semibold hover:underline">
+            LuxeKey Support
           </Link>
-        </div>
+        </p>
       </div>
     </div>
   );

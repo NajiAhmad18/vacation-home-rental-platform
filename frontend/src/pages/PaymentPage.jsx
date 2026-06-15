@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import BookingSummary from "../components/BookingSummary";
 import PaymentForm from "../components/PaymentForm";
 import axiosInstance from "../lib/axios";
+import { ArrowLeft, ShieldCheck, CreditCard, Lock, CheckCircle } from "lucide-react";
 
 const PaymentPage = () => {
   const { bookingId } = useParams();
+  const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
@@ -13,126 +15,152 @@ const PaymentPage = () => {
 
   useEffect(() => {
     let ignore = false;
-
     const fetchBooking = async () => {
       try {
         setLoading(true);
         setError("");
-
-        // Use your actual backend route here
         const res = await axiosInstance.get(`/booking/${bookingId}`);
         const bookingData = res?.data?.data || res?.data?.booking || res?.data;
-
         if (ignore) return;
         setBooking(bookingData);
 
-        // Prefer server totalPrice
         const serverTotal = Number(bookingData?.totalPrice);
-        if (Number.isFinite(serverTotal)) {
-          setTotal(serverTotal);
-          return;
-        }
+        if (Number.isFinite(serverTotal)) { setTotal(serverTotal); return; }
 
-        // Fallback compute
-        const home =
-          (bookingData?.homeId &&
-            typeof bookingData.homeId === "object" &&
-            bookingData.homeId) ||
-          {};
+        const home = (bookingData?.homeId && typeof bookingData.homeId === "object" && bookingData.homeId) || {};
         const checkIn = new Date(bookingData?.checkInDate);
         const checkOut = new Date(bookingData?.checkOutDate);
         const nights = Math.max(0, Math.ceil((checkOut - checkIn) / 86400000));
-
         const basePrice = Number(home?.price || 0) * nights;
-        const cleaningFee = 75;
-        const serviceFee = 89;
-        const taxes = 112;
-        setTotal(basePrice + cleaningFee + serviceFee + taxes);
+        setTotal(basePrice + 75 + 89 + 112);
       } catch (err) {
-        console.error("Failed to fetch booking:", err);
-        if (!ignore) setError("Failed to fetch booking.");
+        if (!ignore) setError("Failed to load booking details.");
       } finally {
         if (!ignore) setLoading(false);
       }
     };
-
     if (bookingId) fetchBooking();
-    return () => {
-      ignore = true;
-    };
+    return () => { ignore = true; };
   }, [bookingId]);
 
-  // ---------- UI states ----------
+  /* ── Loading ─────────────────────────────────── */
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-          <header className="mb-8">
-            <div className="h-8 w-40 bg-slate-200 rounded animate-pulse mb-2" />
-            <div className="h-4 w-64 bg-slate-200 rounded animate-pulse" />
-          </header>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow animate-pulse h-72" />
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow animate-pulse h-72" />
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--surface)" }}>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-14 h-14 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-500 text-sm font-medium">Loading your booking…</p>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Error ───────────────────────────────────── */
+  if (error || !booking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--surface)" }}>
+        <div className="card p-10 text-center max-w-md w-full">
+          <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <CreditCard className="w-7 h-7 text-red-400" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
+            {error || "Booking not found"}
+          </h2>
+          <p className="text-gray-500 text-sm mb-6">
+            We couldn't locate this booking. Please go back and try again.
+          </p>
+          <button
+            onClick={() => navigate(-1)}
+            className="btn-primary px-6 py-3 text-sm mx-auto"
+          >
+            <ArrowLeft className="w-4 h-4" /> Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Main Page ───────────────────────────────── */
+  return (
+    <div className="min-h-screen pb-20 page-enter" style={{ background: "var(--surface)" }}>
+      {/* Page Header */}
+      <div className="bg-white border-b border-gray-100 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <div>
+            <h1 className="text-lg font-bold text-gray-900">Secure Checkout</h1>
+            <p className="text-xs text-gray-400 mt-0.5">Complete your reservation</p>
+          </div>
+          {/* Trust badge */}
+          <div className="ml-auto flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl">
+            <Lock className="w-3.5 h-3.5 text-emerald-500" />
+            SSL Secured
           </div>
         </div>
       </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-slate-50 grid place-items-center px-6">
-        <div className="max-w-lg w-full bg-white border border-slate-200 rounded-3xl shadow p-6 md:p-8 text-center">
-          <h2 className="text-xl md:text-2xl font-semibold text-red-600 mb-2">
-            Oops, something went wrong
-          </h2>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Progress steps */}
+        <div className="flex items-center justify-center gap-2 mb-10 text-xs font-semibold">
+          {["Guest Details", "Review Booking", "Payment"].map((step, i) => (
+            <React.Fragment key={step}>
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${
+                i < 2 ? "bg-blue-50 text-blue-600" : "bg-blue-600 text-white shadow-sm"
+              }`}>
+                {i < 2 ? <CheckCircle className="w-3.5 h-3.5" /> : <CreditCard className="w-3.5 h-3.5" />}
+                {step}
+              </div>
+              {i < 2 && <div className="h-px w-8 bg-gray-300 hidden sm:block" />}
+            </React.Fragment>
+          ))}
         </div>
-      </div>
-    );
-  }
-
-  if (!booking) {
-    return (
-      <div className="min-h-screen bg-slate-50 grid place-items-center px-6">
-        <div className="max-w-lg w-full bg-white border border-slate-200 rounded-3xl shadow p-6 md:p-8 text-center">
-          <h2 className="text-xl md:text-2xl font-semibold text-slate-900 mb-2">
-            Booking not found
-          </h2>
-          <p className="text-slate-600">
-            We couldn’t locate this booking. Please go back and try again.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // ---------- Main page ----------
-  return (
-    <div className="min-h-screen bg-slate-50 py-10">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Page header */}
-        <header className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900">
-            Checkout
-          </h1>
-          <p className="text-slate-600 mt-1">
-            Review your booking and complete the payment.
-          </p>
-        </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          {/* Left: Booking Summary (sticky on large screens) */}
-          <section className="lg:sticky lg:top-24">
+          {/* Left: Booking Summary */}
+          <section className="lg:sticky lg:top-24 animate-fade-in">
+            <h2 className="text-lg font-bold text-gray-900 mb-4">Booking Summary</h2>
             <BookingSummary booking={booking} />
+
+            {/* Trust guarantee */}
+            <div className="card p-5 mt-5 space-y-3">
+              <p className="text-xs font-bold text-gray-600 uppercase tracking-wider">Payment Guarantee</p>
+              {[
+                { icon: ShieldCheck, color: "text-emerald-600", text: "Your data is 256-bit SSL encrypted" },
+                { icon: CreditCard, color: "text-blue-600", text: "Powered by Stripe — PCI DSS compliant" },
+                { icon: Lock, color: "text-violet-600", text: "Card details are never stored on our servers" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 text-xs text-gray-600">
+                  <item.icon className={`w-4 h-4 flex-shrink-0 ${item.color}`} />
+                  {item.text}
+                </div>
+              ))}
+            </div>
           </section>
 
-          {/* Right: Payment card (only one shell) */}
-          <section>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-6 md:p-8">
-              <h3 className="text-2xl font-bold text-slate-900 mb-6">Payment Information</h3>
+          {/* Right: Payment Form */}
+          <section className="animate-fade-in" style={{ animationDelay: "100ms" }}>
+            <h2 className="text-lg font-bold text-gray-900 mb-4">Payment Information</h2>
+            <div className="card p-6 sm:p-8 shadow-lg">
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-6 pb-5 border-b border-gray-100">
+                <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                  <CreditCard className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="font-bold text-gray-900 text-sm">Card Payment</p>
+                  <p className="text-xs text-gray-400">Powered by Stripe</p>
+                </div>
+                <div className="ml-auto flex items-center gap-1">
+                  {/* Card logos as emoji placeholders */}
+                  <span className="text-lg">💳</span>
+                </div>
+              </div>
 
-              {/* 👇 Pass embedded so PaymentForm doesn't render its own shell */}
               <PaymentForm
                 bookingId={booking._id}
                 displayAmount={total}
@@ -140,8 +168,9 @@ const PaymentPage = () => {
                 embedded
               />
 
-              <p className="text-xs text-slate-500 mt-4">
-                Payments are processed securely via Stripe. Your card details are never stored on our servers.
+              <p className="text-xs text-gray-400 mt-5 text-center leading-relaxed">
+                By completing payment, you agree to LuxeKey's Terms of Service and Booking Policy.
+                Payments are processed securely via Stripe.
               </p>
             </div>
           </section>
