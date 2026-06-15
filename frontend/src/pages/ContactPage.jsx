@@ -30,7 +30,7 @@ export default function ContactPage() {
   const contactOptions = [
     {
       title: "Email Support",
-      detail: "support@stayfinder.com",
+      detail: "support@luxekey.com",
       description: "Get in touch with our help desk directly.",
       icon: Mail,
     },

@@ -95,7 +95,7 @@ const Header = () => {
               <Home className="w-5 h-5 text-white" />
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-              StayFinder
+              LuxeKey
             </span>
           </Link>
 

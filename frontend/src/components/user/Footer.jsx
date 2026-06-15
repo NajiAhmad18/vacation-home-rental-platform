@@ -13,7 +13,7 @@ const Footer = () => {
               <div className="h-10 w-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center mr-3 shadow-md shadow-blue-500/10">
                 <Home className="text-white h-5 w-5" />
               </div>
-              <span className="text-2xl font-bold text-white tracking-tight">StayFinder</span>
+              <span className="text-2xl font-bold text-white tracking-tight">LuxeKey</span>
             </div>
             <p className="text-gray-400 mb-6 max-w-sm leading-relaxed text-sm">
               Your premium destination for finding the perfect, verified vacation home rental. We make booking stays simple, secure, and stress-free.
@@ -44,7 +44,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/about" className="text-gray-400 hover:text-white transition duration-200">
-                  About StayFinder
+                  About LuxeKey
                 </Link>
               </li>
               <li>
@@ -69,14 +69,14 @@ const Footer = () => {
               </li>
               <li className="flex items-center">
                 <Mail className="h-4 w-4 text-blue-500 mr-3 flex-shrink-0" />
-                <span>support@stayfinder.com</span>
+                <span>support@luxekey.com</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 leading-normal">
-          <p>&copy; {new Date().getFullYear()} StayFinder Inc. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} LuxeKey Inc. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a href="#" className="hover:text-gray-300">Privacy Policy</a>
             <a href="#" className="hover:text-gray-300">Terms of Service</a>

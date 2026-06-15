@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Eye,
   EyeOff,
@@ -7,11 +8,12 @@ import {
   Lock,
   AlertCircle,
   CheckCircle,
-  Heart,
+  Key,
+  ArrowLeft,
   Building,
+  Heart,
 } from "lucide-react";
 import { useAuthStore } from "../../stores/useAuthStore.js";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const Signup = ({ type = "user" }) => {
@@ -32,11 +34,7 @@ const Signup = ({ type = "user" }) => {
 
   // Colors and icons for user vs owner
   const isOwner = type === "owner";
-  const gradientFrom = isOwner ? "blue" : "pink";
-  const gradientTo = isOwner ? "purple" : "rose";
-  const focusRingColor = isOwner
-    ? "focus:ring-blue-500"
-    : "focus:ring-pink-500";
+  const focusRingColor = isOwner ? "focus:ring-blue-500" : "focus:ring-indigo-500";
   const Icon = isOwner ? Building : Heart;
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -81,15 +79,13 @@ const Signup = ({ type = "user" }) => {
       else await signupUser(formData);
 
       toast.success(
-        `${isOwner ? "Owner" : "User"} account created successfully!`
+        `${isOwner ? "Host" : "Guest"} account created successfully!`
       );
       navigate("/");
     } catch (error) {
-      toast.error(
-        error.message || "Failed to create account. Please try again."
-      );
+      toast.error(error.message || "Failed to create account.");
       setErrors({
-        submit: error.message || "Failed to create account. Please try again.",
+        submit: error.message || "Failed to create account.",
       });
     } finally {
       setIsSubmitting(false);
@@ -97,62 +93,83 @@ const Signup = ({ type = "user" }) => {
   };
 
   return (
-    <div
-      className={
-        isOwner
-          ? "min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
-          : "min-h-screen bg-gradient-to-br from-pink-50 to-rose-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
-      }
-    >
-      <div className="max-w-md w-full space-y-8">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+    <div className="min-h-screen bg-white flex flex-col md:flex-row">
+      {/* Back to Home floating button */}
+      <Link
+        to="/"
+        className="absolute top-6 left-6 z-20 flex items-center space-x-2 text-sm font-semibold text-gray-600 hover:text-gray-900 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-gray-100 transition"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span>Back to Home</span>
+      </Link>
+
+      {/* 1. Left Graphic Panel (Hidden on mobile) */}
+      <div
+        className="hidden md:flex md:w-1/2 relative bg-cover bg-center items-center p-16 text-left"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80')",
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-slate-950/20 backdrop-blur-[1px]"></div>
+
+        <div className="relative z-10 max-w-lg mt-auto text-white">
+          <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 mb-6">
+            <Key className="w-6 h-6 text-blue-400" />
+          </div>
+          <h2 className="text-4xl font-extrabold tracking-tight leading-tight">
+            {isOwner ? "Host & Earn with LuxeKey" : "Explore verified boutique stays"}
+          </h2>
+          <p className="text-gray-200 mt-4 leading-relaxed text-sm sm:text-base">
+            {isOwner
+              ? "List your room, apartment, or villa to connect with travelers. Recieve encrypted Stripe payouts with automated billing support."
+              : "Create a guest account to curate stays, access instant elements booking, and download PDF receipts."}
+          </p>
+        </div>
+      </div>
+
+      {/* 2. Right Form Panel */}
+      <div className="flex-1 flex items-center justify-center py-20 px-6 sm:px-12 lg:px-16 bg-slate-50/30">
+        <div className="max-w-md w-full">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div
-              className={
-                isOwner
-                  ? "mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4"
-                  : "mx-auto w-16 h-16 bg-gradient-to-r from-pink-500 to-rose-600 rounded-full flex items-center justify-center mb-4"
-              }
-            >
-              <Icon className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900">
-              {isOwner ? "Join as Property Owner" : "Join StayFinder"}
+          <div className="text-center md:text-left mb-8">
+            <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+              {isOwner ? "Become a Host" : "Create Account"}
             </h2>
-            <p className="mt-2 text-gray-600">
-              {isOwner
-                ? "Start listing your properties and earn income"
-                : "Discover amazing places to stay around the world"}
+            <p className="mt-2 text-sm text-gray-500">
+              Join <span className="font-semibold text-blue-600">LuxeKey</span> to start planning your stays.
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Username */}
             <InputField
               id="username"
               name="username"
               type="text"
               value={formData.username}
               onChange={handleInputChange}
-              placeholder="Enter your username"
+              placeholder="Username"
               error={errors.username}
               Icon={User}
               focusRingColor={focusRingColor}
             />
 
+            {/* Email */}
             <InputField
               id="email"
               name="email"
               type="email"
               value={formData.email}
               onChange={handleInputChange}
-              placeholder="Enter your email"
+              placeholder="Email address"
               error={errors.email}
               Icon={Mail}
               focusRingColor={focusRingColor}
             />
 
+            {/* Password */}
             <PasswordField
               id="password"
               name="password"
@@ -160,12 +177,13 @@ const Signup = ({ type = "user" }) => {
               onChange={handleInputChange}
               show={showPassword}
               setShow={setShowPassword}
-              placeholder="Create a password"
+              placeholder="Password"
               error={errors.password}
               Icon={Lock}
               focusRingColor={focusRingColor}
             />
 
+            {/* Confirm Password */}
             <PasswordField
               id="confirmPassword"
               name="confirmPassword"
@@ -173,7 +191,7 @@ const Signup = ({ type = "user" }) => {
               onChange={handleInputChange}
               show={showConfirmPassword}
               setShow={setShowConfirmPassword}
-              placeholder="Confirm your password"
+              placeholder="Confirm password"
               error={errors.confirmPassword}
               Icon={Lock}
               match={
@@ -183,64 +201,49 @@ const Signup = ({ type = "user" }) => {
               focusRingColor={focusRingColor}
             />
 
+            {/* Submit Error */}
             {errors.submit && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                <p className="text-sm text-red-600 flex items-center">
-                  <AlertCircle className="w-4 h-4 mr-2" />
-                  {errors.submit}
+              <div className="bg-red-50 border border-red-150 rounded-2xl p-3.5 text-left">
+                <p className="text-xs text-red-600 flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span>{errors.submit}</span>
                 </p>
               </div>
             )}
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className={
-                isOwner
-                  ? "w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                  : "w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              }
+              className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-2xl shadow-md shadow-blue-500/10 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none transition duration-200"
             >
               {isSubmitting ? (
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Creating Account...
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                  <span>Creating account...</span>
                 </div>
               ) : (
-                `Create ${isOwner ? "Owner" : "User"} Account`
+                `Register as ${isOwner ? "Host" : "Guest"}`
               )}
             </button>
           </form>
 
-          {/* Footer */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+          {/* Footer Navigation */}
+          <div className="mt-8 text-center border-t border-gray-100 pt-6 space-y-3">
+            <p className="text-sm text-gray-500">
               Already have an account?{" "}
-              <a
-                href="/auth/sign-in"
-                className={
-                  isOwner
-                    ? "font-medium text-blue-600 hover:text-blue-500 transition-colors"
-                    : "font-medium text-pink-600 hover:text-pink-500 transition-colors"
-                }
-              >
-                Sign in here
-              </a>
+              <Link to="/auth/sign-in" className="font-semibold text-blue-600 hover:text-blue-700 transition">
+                Sign in
+              </Link>
             </p>
-            <p className="mt-2 text-sm text-gray-600">
-              {isOwner
-                ? "Looking to rent instead?"
-                : "Want to list your property?"}{" "}
-              <a
-                href={isOwner ? "/auth/sign-up" : "/auth/owner/sign-up"}
-                className={
-                  isOwner
-                    ? "font-medium text-blue-600 hover:text-blue-500 transition-colors"
-                    : "font-medium text-pink-600 hover:text-pink-500 transition-colors"
-                }
+            <p className="text-sm text-gray-500">
+              {isOwner ? "Looking to rent vacation stays instead?" : "Want to list your vacation property?"}{" "}
+              <Link
+                to={isOwner ? "/auth/sign-up" : "/auth/owner/sign-up"}
+                className="font-semibold text-blue-600 hover:text-blue-700 transition block sm:inline-block mt-1 sm:mt-0"
               >
-                {isOwner ? "Sign up as a guest" : "Sign up as an owner"}
-              </a>
+                {isOwner ? "Register as Guest" : "Register as Host"}
+              </Link>
             </p>
           </div>
         </div>
@@ -249,7 +252,7 @@ const Signup = ({ type = "user" }) => {
   );
 };
 
-// Reusable Input Field
+// Reusable Input Field Component
 const InputField = ({
   id,
   name,
@@ -262,14 +265,11 @@ const InputField = ({
   focusRingColor,
 }) => (
   <div>
-    <label
-      htmlFor={id}
-      className="block text-sm font-medium text-gray-700 mb-2"
-    >
+    <label htmlFor={id} className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 text-left">
       {placeholder}
     </label>
     <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
         <Icon className="h-5 w-5 text-gray-400" />
       </div>
       <input
@@ -278,27 +278,22 @@ const InputField = ({
         type={type}
         value={value}
         onChange={onChange}
-        className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none ${focusRingColor} focus:border-transparent transition-colors ${
-          error ? "border-red-300 bg-red-50" : "border-gray-300"
+        className={`block w-full pl-11 pr-4 py-3.5 bg-white border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all shadow-sm ${
+          error ? "border-red-300 bg-red-50/50" : "border-gray-200"
         }`}
         placeholder={placeholder}
       />
-      {error && (
-        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-          <AlertCircle className="h-5 w-5 text-red-400" />
-        </div>
-      )}
     </div>
     {error && (
-      <p className="mt-1 text-sm text-red-600 flex items-center">
-        <AlertCircle className="w-4 h-4 mr-1" />
+      <p className="mt-1.5 text-xs text-red-600 flex items-center text-left">
+        <AlertCircle className="w-3.5 h-3.5 mr-1" />
         {error}
       </p>
     )}
   </div>
 );
 
-// Reusable Password Field
+// Reusable Password Field Component
 const PasswordField = ({
   id,
   name,
@@ -313,14 +308,11 @@ const PasswordField = ({
   focusRingColor,
 }) => (
   <div>
-    <label
-      htmlFor={id}
-      className="block text-sm font-medium text-gray-700 mb-2"
-    >
+    <label htmlFor={id} className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 text-left">
       {placeholder}
     </label>
     <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
         <Icon className="h-5 w-5 text-gray-400" />
       </div>
       <input
@@ -329,14 +321,14 @@ const PasswordField = ({
         type={show ? "text" : "password"}
         value={value}
         onChange={onChange}
-        className={`block w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none ${focusRingColor} focus:border-transparent transition-colors ${
-          error ? "border-red-300 bg-red-50" : "border-gray-300"
+        className={`block w-full pl-11 pr-11 py-3.5 bg-white border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all shadow-sm ${
+          error ? "border-red-300 bg-red-50/50" : "border-gray-200"
         }`}
         placeholder={placeholder}
       />
       <button
         type="button"
-        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+        className="absolute inset-y-0 right-0 pr-4 flex items-center"
         onClick={() => setShow(!show)}
       >
         {show ? (
@@ -347,14 +339,14 @@ const PasswordField = ({
       </button>
     </div>
     {error && (
-      <p className="mt-1 text-sm text-red-600 flex items-center">
-        <AlertCircle className="w-4 h-4 mr-1" />
+      <p className="mt-1.5 text-xs text-red-600 flex items-center text-left">
+        <AlertCircle className="w-3.5 h-3.5 mr-1" />
         {error}
       </p>
     )}
     {match && !error && (
-      <p className="mt-1 text-sm text-green-600 flex items-center">
-        <CheckCircle className="w-4 h-4 mr-1" />
+      <p className="mt-1.5 text-xs text-green-600 flex items-center text-left">
+        <CheckCircle className="w-3.5 h-3.5 mr-1" />
         Passwords match
       </p>
     )}

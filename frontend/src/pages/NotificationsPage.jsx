@@ -14,7 +14,7 @@ export default function NotificationsPage() {
     },
     {
       id: 2,
-      title: "Welcome to StayFinder!",
+      title: "Welcome to LuxeKey!",
       message: "Explore premium verified holiday stays and start booking your summer getaways with secure Stripe checkouts.",
       time: "1 day ago",
       type: "welcome",

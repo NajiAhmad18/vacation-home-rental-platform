@@ -43,7 +43,7 @@ export default function AboutPage() {
             Redefining Your Holiday <span className="bg-gradient-to-r from-blue-400 to-indigo-300 bg-clip-text text-transparent">Stay Experience</span>
           </h1>
           <p className="text-blue-100/80 mt-6 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-            StayFinder started with a simple vision: to connect travelers with premium, fully verified vacation rentals while delivering total checkout security.
+            LuxeKey started with a simple vision: to connect travelers with premium, fully verified vacation rentals while delivering total checkout security.
           </p>
         </div>
       </div>
@@ -63,7 +63,7 @@ export default function AboutPage() {
       {/* Brand Values */}
       <div className="max-w-7xl mx-auto px-4 mt-20 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-3xl font-extrabold text-gray-900">Why StayFinder?</h2>
+          <h2 className="text-3xl font-extrabold text-gray-900">Why LuxeKey?</h2>
           <p className="text-gray-500 mt-3 text-sm md:text-base leading-relaxed">
             We operate at the intersection of premium home hosting, guest hospitality, and secure, modern booking systems.
           </p>
@@ -94,7 +94,7 @@ export default function AboutPage() {
           <div className="p-8 md:p-12 lg:w-1/2 text-left">
             <h2 className="text-3xl font-extrabold tracking-tight">Ready to Host Your Home?</h2>
             <p className="text-blue-100 mt-4 leading-relaxed text-sm md:text-base">
-              Join thousands of homeowners and room hosts listing their properties on StayFinder. Manage bookings, secure deposits, issue automated invoice reports, and receive payouts via Stripe seamlessly.
+              Join thousands of homeowners and room hosts listing their properties on LuxeKey. Manage bookings, secure deposits, issue automated invoice reports, and receive payouts via Stripe seamlessly.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
@@ -116,7 +116,7 @@ export default function AboutPage() {
             <div className="absolute inset-0 bg-gradient-to-tr from-blue-700 via-indigo-800 to-indigo-900 flex items-center justify-center">
               <div className="text-center p-8 space-y-4">
                 <Compass className="w-16 h-16 text-blue-400 mx-auto animate-pulse" />
-                <p className="text-lg font-semibold tracking-wide">Find Your Haven, Anywhere</p>
+                <p className="text-lg font-semibold tracking-wide">Find Your Escape, Anywhere</p>
               </div>
             </div>
           </div>
