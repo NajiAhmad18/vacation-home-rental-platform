@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: vacation-rental-backend
+    env: node
+    region: singapore  # closest to Sri Lanka
+    plan: free
+    buildCommand: npm install
+    startCommand: node backend/server.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false          # set manually in Render dashboard
+      - key: JWT_SECRET
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false          # set to your Vercel frontend URL
+      - key: API_BASE_URL
+        sync: false          # set to your Render backend URL
