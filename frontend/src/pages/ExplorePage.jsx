@@ -26,14 +26,17 @@ export default function ExplorePage() {
   }, [searchParams]);
 
   const filteredProperties = homes.filter((home) => {
-    const query = searchQuery.toLowerCase();
+    const query = searchQuery.toLowerCase().trim();
+    const loc = home.location || {};
     const matchesSearch =
       !query ||
       home.title?.toLowerCase().includes(query) ||
-      home.location?.toLowerCase().includes(query) ||
-      home.location?.city?.toLowerCase().includes(query) ||
-      home.address?.toLowerCase().includes(query) ||
-      home.description?.toLowerCase().includes(query);
+      home.description?.toLowerCase().includes(query) ||
+      loc.city?.toLowerCase().includes(query) ||
+      loc.district?.toLowerCase().includes(query) ||
+      loc.province?.toLowerCase().includes(query) ||
+      loc.address?.toLowerCase().includes(query) ||
+      home.address?.toLowerCase().includes(query);
 
     const matchesFilter =
       activeFilter === "All" ||
