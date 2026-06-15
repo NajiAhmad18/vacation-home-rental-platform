@@ -16,6 +16,11 @@ import PaymentSuccess from "./pages/PaymentSucces.jsx";
 import AdminDashboard from "./pages/adminDashboard";
 import RoomOwnerDashboard from "./pages/RoomOwnerDashboard";
 
+import ExplorePage from "./pages/ExplorePage";
+import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
+import NotificationsPage from "./pages/NotificationsPage";
+
 import Login from "./components/auth/Login.jsx";
 import Signup from "./components/auth/Signup.jsx";
 
@@ -62,6 +67,10 @@ function App() {
           {/* ================= USER ROUTES (With Navbar) ================= */}
           <Route element={<UserLayout />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="/explore" element={<ExplorePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/home/:id" element={<PropertyDetailPage />} />
             <Route path="/book-home/:id" element={<BookHome />} />
 
