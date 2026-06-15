@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "../../stores/useAuthStore.js";
+import { useNotificationStore } from "../../stores/useNotificationStore.js";
+import { useWishlistStore } from "../../stores/useWishlistStore.js";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,8 +31,18 @@ const Header = () => {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
 
-  const unreadNotifications = 3;
-  const wishlistCount = 4;
+  const notifications = useNotificationStore((state) => state.notifications);
+  const unreadNotifications = notifications.filter((n) => !n.read).length;
+
+  const wishlist = useWishlistStore((state) => state.wishlist);
+  const fetchWishlist = useWishlistStore((state) => state.fetchWishlist);
+  const wishlistCount = wishlist.length;
+
+  useEffect(() => {
+    if (user) {
+      fetchWishlist();
+    }
+  }, [user, fetchWishlist]);
 
   useEffect(() => {
     const handleScroll = () => {

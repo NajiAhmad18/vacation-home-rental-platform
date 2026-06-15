@@ -1,71 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import NotificationItem from './NotificationItem';
 import { Bell, CheckCheck } from 'lucide-react';
+import { useNotificationStore } from '../../../stores/useNotificationStore.js';
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      type: 'booking',
-      title: 'Booking Confirmation',
-      message: 'Your booking for Sunset Villa Resort has been confirmed!',
-      time: '2 hours ago',
-      read: false,
-      icon: 'calendar'
-    },
-    {
-      id: 2,
-      type: 'message',
-      title: 'Message from Host',
-      message: 'John sent you a message about your upcoming stay.',
-      time: '4 hours ago',
-      read: false,
-      icon: 'message'
-    },
-    {
-      id: 3,
-      type: 'reminder',
-      title: 'Check-in Reminder',
-      message: 'Don\'t forget to check in tomorrow at Mountain Cabin Retreat.',
-      time: '1 day ago',
-      read: true,
-      icon: 'clock'
-    },
-    {
-      id: 4,
-      type: 'review',
-      title: 'Review Request',
-      message: 'How was your stay at Ocean View Hotel? Leave a review!',
-      time: '2 days ago',
-      read: false,
-      icon: 'star'
-    },
-    {
-      id: 5,
-      type: 'payment',
-      title: 'Payment Received',
-      message: 'Your payment for City Center Apartment has been processed.',
-      time: '3 days ago',
-      read: true,
-      icon: 'credit-card'
-    }
-  ]);
+  const { notifications, markAllRead, markRead, deleteNotification } = useNotificationStore();
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const markAllRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, read: true })));
-  };
-
-  const markAsRead = (id) => {
-    setNotifications(notifications.map(n => 
-      n.id === id ? { ...n, read: true } : n
-    ));
-  };
-
-  const deleteNotification = (id) => {
-    setNotifications(notifications.filter(n => n.id !== id));
-  };
+  const markAsRead = (id) => markRead(id);
 
   return (
     <div className="space-y-6">

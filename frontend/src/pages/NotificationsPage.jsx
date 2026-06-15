@@ -60,8 +60,25 @@ const colorMap = {
   indigo: { bg: "bg-indigo-50", text: "text-indigo-600", dot: "bg-indigo-500" },
 };
 
+import { useNotificationStore } from "../stores/useNotificationStore.js";
+
+const iconMap = {
+  Home,
+  CreditCard,
+  Star,
+  AlertCircle,
+  Calendar,
+  Info,
+};
+
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState(SAMPLE_NOTIFICATIONS);
+  const {
+    notifications,
+    markAllRead,
+    markRead,
+    deleteNotification,
+    clearAll,
+  } = useNotificationStore();
   const [activeFilter, setActiveFilter] = useState("All");
 
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -74,19 +91,6 @@ export default function NotificationsPage() {
     if (activeFilter === "System") return n.type === "system";
     return true;
   });
-
-  const markAllRead = () =>
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-
-  const markRead = (id) =>
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
-
-  const deleteNotification = (id) =>
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-
-  const clearAll = () => setNotifications([]);
 
   return (
     <div className="min-h-screen pb-20 page-enter" style={{ background: "var(--surface)" }}>
@@ -199,6 +203,7 @@ export default function NotificationsPage() {
               .sort((a, b) => a.read - b.read)
               .map((n, i) => {
                 const { bg, text, dot } = colorMap[n.color] || colorMap.blue;
+                const IconComponent = iconMap[n.iconName] || Info;
                 return (
                   <div
                     key={n.id}
@@ -210,7 +215,7 @@ export default function NotificationsPage() {
                   >
                     {/* Icon */}
                     <div className={`w-10 h-10 ${bg} ${text} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                      <n.icon className="w-5 h-5" />
+                      <IconComponent className="w-5 h-5" />
                     </div>
 
                     {/* Content */}

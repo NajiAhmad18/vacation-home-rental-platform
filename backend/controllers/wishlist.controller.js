@@ -5,9 +5,7 @@ import Home from "../models/home.model.js";
 export const addToWishlist = async (req, res) => {
   try {
     const { homeId } = req.body;
-    // const userId = req.user.id;
-
-    const userId = "66b1d2c3f4a567890123abcd";
+    const userId = req.user._id;
 
     // Check if home exists
     const home = await Home.findById(homeId);
@@ -40,8 +38,7 @@ export const addToWishlist = async (req, res) => {
 // Get all wishlist items sorted by priority
 export const getWishlist = async (req, res) => {
   try {
-    // const userId = req.user.id;
-    const userId = "66b1d2c3f4a567890123abcd";
+    const userId = req.user._id;
     const wishlist = await Wishlist.find({ userId })
       .populate("homeId")
       .sort({ priority: 1 });
@@ -56,7 +53,7 @@ export const getWishlist = async (req, res) => {
 export const removeFromWishlist = async (req, res) => {
   try {
     const { homeId } = req.params;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     const deleted = await Wishlist.findOneAndDelete({ userId, homeId });
 
