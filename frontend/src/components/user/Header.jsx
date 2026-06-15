@@ -83,19 +83,19 @@ const Header = () => {
     <nav
       className={`sticky top-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-white/80 backdrop-blur-md shadow-lg border-b border-gray-100 py-2"
-          : "bg-white border-b border-gray-100 py-3"
+          ? "bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100 py-1.5"
+          : "bg-white border-b border-gray-100 py-2"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-12">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0 flex items-center space-x-2 group">
-            <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-200">
-              <Home className="w-5 h-5 text-white" />
+            <div className="w-8.5 h-8.5 bg-gradient-to-tr from-blue-600 via-indigo-600 to-indigo-700 rounded-lg flex items-center justify-center shadow-md shadow-blue-500/10 group-hover:scale-105 transition-all duration-300">
+              <Home className="w-4 h-4 text-white" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-              LuxeKey
+            <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 to-slate-800 bg-clip-text text-transparent flex items-center">
+              LuxeKey<span className="text-blue-600 font-black">.</span>
             </span>
           </Link>
 
@@ -108,14 +108,14 @@ const Header = () => {
                   key={link.name}
                   to={link.to}
                   className={({ isActive }) =>
-                    `flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    `flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold border transition-all duration-300 ${
                       isActive
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                        ? "bg-blue-50/50 border-blue-100/30 text-blue-600"
+                        : "border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50/50"
                     }`
                   }
                 >
-                  <IconComponent className="w-4 h-4" />
+                  <IconComponent className="w-3.5 h-3.5" />
                   <span>{link.name}</span>
                 </NavLink>
               );
@@ -123,15 +123,15 @@ const Header = () => {
           </div>
 
           {/* Desktop Auth / User Info */}
-          <div className="hidden md:flex items-center space-x-4 relative">
+          <div className="hidden md:flex items-center space-x-2.5 relative">
             <Link
               to="/wishlist"
-              className="relative p-2 text-gray-500 hover:text-rose-500 hover:bg-gray-50 rounded-full transition-colors duration-200"
+              className="relative p-2 text-gray-500 hover:text-rose-500 hover:bg-gray-50 border border-gray-100/80 hover:border-gray-200 rounded-lg transition-all duration-300"
               title="Wishlist"
             >
-              <Heart className="w-5 h-5" />
+              <Heart className="w-4 h-4" />
               {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] font-semibold ring-2 ring-white animate-pulse">
+                <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 rounded-full bg-rose-500 text-white text-[8px] font-bold ring-2 ring-white animate-pulse">
                   {wishlistCount}
                 </span>
               )}
@@ -139,54 +139,54 @@ const Header = () => {
 
             <Link
               to="/notifications"
-              className="relative p-2 text-gray-500 hover:text-blue-600 hover:bg-gray-50 rounded-full transition-colors duration-200"
+              className="relative p-2 text-gray-500 hover:text-blue-600 hover:bg-gray-50 border border-gray-100/80 hover:border-gray-200 rounded-lg transition-all duration-300"
               title="Notifications"
             >
-              <Bell className="w-5 h-5" />
+              <Bell className="w-4 h-4" />
               {unreadNotifications > 0 && (
-                <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-semibold ring-2 ring-white">
+                <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 rounded-full bg-blue-600 text-white text-[8px] font-bold ring-2 ring-white">
                   {unreadNotifications}
                 </span>
               )}
             </Link>
 
             {!user ? (
-              <div className="flex items-center space-x-3 pl-2 border-l border-gray-200">
+              <div className="flex items-center space-x-2 pl-2 border-l border-gray-200">
                 <Link
                   to="/auth/sign-in"
-                  className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 px-4 py-2 text-sm font-medium rounded-xl transition-colors"
+                  className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 hover:bg-gray-50 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200"
                 >
-                  <LogIn className="w-4 h-4" />
+                  <LogIn className="w-3.5 h-3.5" />
                   <span>Login</span>
                 </Link>
                 <Link
                   to="/auth/sign-up"
-                  className="flex items-center space-x-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 px-5 py-2.5 rounded-xl text-sm font-medium shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/15 transition-all duration-200"
+                  className="flex items-center space-x-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-indigo-700 text-white hover:opacity-95 px-4 py-2 rounded-lg text-xs font-semibold shadow-md shadow-blue-500/5 hover:scale-[1.01] active:scale-95 transition-all duration-300"
                 >
-                  <UserPlus className="w-4 h-4" />
+                  <UserPlus className="w-3.5 h-3.5" />
                   <span>Sign Up</span>
                 </Link>
               </div>
             ) : (
-              <div className="relative pl-2 border-l border-gray-200" ref={dropdownRef}>
+              <div className="relative pl-2.5 border-l border-gray-200" ref={dropdownRef}>
                 <button
                   onClick={toggleDropdown}
-                  className="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100/80 border border-gray-100 px-3 py-1.5 rounded-xl transition-all duration-200"
+                  className="flex items-center space-x-2 bg-gray-50 hover:bg-white border border-gray-100 hover:border-gray-200 hover:shadow-sm px-2.5 py-1.5 rounded-lg transition-all duration-300 active:scale-95 cursor-pointer"
                 >
                   {user?.profile?.profileImage ? (
                     <img
                       src={user.profile.profileImage}
                       alt="Profile"
-                      className="w-7 h-7 rounded-full object-cover ring-1 ring-gray-200"
+                      className="w-6.5 h-6.5 rounded-full object-cover ring-1 ring-gray-200"
                     />
                   ) : (
                     <div
-                      className={`w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-inner ${getRandomColor()}`}
+                      className="w-6.5 h-6.5 rounded-full flex items-center justify-center text-white text-[9px] font-black shadow-inner bg-gradient-to-tr from-blue-600 to-indigo-600"
                     >
                       {user?.username?.[0]?.toUpperCase() || "U"}
                     </div>
                   )}
-                  <span className="text-gray-700 text-sm font-medium max-w-[120px] truncate">
+                  <span className="text-gray-700 text-xs font-semibold max-w-[100px] truncate">
                     {user.username}
                   </span>
                 </button>
