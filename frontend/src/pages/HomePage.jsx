@@ -96,7 +96,7 @@ function HomePage() {
     <div className="min-h-screen pb-24" style={{ background: "var(--surface)" }}>
 
       {/* ── Hero Section ─────────────────────────────────── */}
-      <section className="relative overflow-hidden min-h-[620px] flex items-center">
+      <section className="relative overflow-hidden min-h-[580px] sm:min-h-[620px] flex items-center">
         {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -110,48 +110,48 @@ function HomePage() {
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse-soft" />
         <div className="absolute bottom-1/4 right-1/3 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: "1s" }} />
 
-        <div className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 w-full transition-all duration-700 ${heroLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <div className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-36 sm:py-24 w-full transition-all duration-700 ${heroLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <div className="max-w-3xl">
             {/* Pill badge */}
-            <div className="inline-flex items-center gap-2 glass text-blue-300 text-xs font-semibold px-4 py-2 rounded-full mb-6 border border-white/10">
+            <div className="hidden sm:inline-flex items-center gap-2 glass text-blue-300 text-xs font-semibold px-4 py-2 rounded-full mb-5 border border-white/10">
               <Sparkles className="w-3.5 h-3.5 animate-pulse text-blue-400" />
               <span>Discover Verified Luxury Stays Worldwide</span>
             </div>
 
             {/* Heading */}
-            <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.05] text-white mb-6">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.05] text-white mb-5">
               Find Your{" "}
               <span className="gradient-text-hero">Perfect</span>
               <br />
               <span className="text-white">Escape</span>
             </h1>
 
-            <p className="text-gray-300 text-lg max-w-xl leading-relaxed mb-10">
-              Browse thousands of fully verified vacation homes, private villas, and city apartments — backed by Stripe‑encrypted checkouts.
+            <p className="text-gray-300 text-sm sm:text-lg max-w-xl leading-relaxed mb-8 max-w-xs sm:max-w-xl">
+              Browse fully verified vacation homes, private villas, and city apartments — backed by Stripe‑encrypted checkouts.
             </p>
 
             {/* Search form */}
             <form
               onSubmit={handleSearchSubmit}
-              className="flex flex-col sm:flex-row gap-3 max-w-2xl"
+              className="flex flex-row gap-2 max-w-2xl"
             >
-              <div className="flex-1 relative flex items-center bg-white rounded-2xl shadow-2xl border border-gray-100">
-                <Search className="w-5 h-5 text-gray-400 absolute left-4 flex-shrink-0" />
+              <div className="flex-1 relative flex items-center bg-white rounded-2xl shadow-2xl border border-gray-100 min-w-0">
+                <Search className="w-4 h-4 text-gray-400 absolute left-3 sm:left-4 flex-shrink-0" />
                 <input
                   type="text"
-                  placeholder="Search by city, location or property..."
+                  placeholder="City, location or property..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-transparent text-gray-800 placeholder-gray-400 text-sm focus:outline-none rounded-2xl"
+                  className="w-full pl-9 sm:pl-12 pr-3 py-3 sm:py-4 bg-transparent text-gray-800 placeholder-gray-400 text-sm focus:outline-none rounded-2xl"
                 />
               </div>
               <button
                 type="submit"
-                className="btn-primary px-8 py-4 rounded-2xl text-sm whitespace-nowrap"
+                className="btn-primary px-4 sm:px-8 py-3 sm:py-4 rounded-2xl text-sm whitespace-nowrap flex-shrink-0"
                 style={{ borderRadius: "16px" }}
               >
                 <Search className="w-4 h-4" />
-                Search Stays
+                <span className="hidden sm:inline">Search Stays</span>
               </button>
             </form>
 
@@ -173,11 +173,11 @@ function HomePage() {
         {/* Stats bar */}
         <div className="absolute bottom-0 left-0 right-0">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="glass rounded-t-3xl px-8 py-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-white/10">
+            <div className="glass rounded-t-2xl px-4 sm:px-8 py-4 grid grid-cols-4 gap-2 sm:gap-4 border-t border-white/10">
               {STATS.map((s) => (
                 <div key={s.label} className="text-center">
-                  <div className="text-2xl font-black text-white">{s.value}</div>
-                  <div className="text-xs text-white/60 font-medium mt-0.5">{s.label}</div>
+                  <div className="text-base sm:text-2xl font-black text-white">{s.value}</div>
+                  <div className="text-[10px] sm:text-xs text-white/60 font-medium mt-0.5 leading-tight">{s.label}</div>
                 </div>
               ))}
             </div>
@@ -229,12 +229,12 @@ function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
             {TRENDING.map((dest, i) => (
               <Link
                 key={dest.name}
                 to={`/explore?query=${encodeURIComponent(dest.query)}`}
-                className="group relative h-56 rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 animate-fade-in"
+                className="group relative h-40 sm:h-56 rounded-2xl sm:rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 animate-fade-in"
                 style={{ animationDelay: `${i * 80}ms` }}
               >
                 <img
@@ -269,7 +269,7 @@ function HomePage() {
         {/* ── Promotional Ad Banner ──────────────────────── */}
         <section className="py-8">
           <div
-            className="relative overflow-hidden rounded-3xl p-10 sm:p-14 flex flex-col md:flex-row justify-between items-center gap-8"
+            className="relative overflow-hidden rounded-2xl sm:rounded-3xl p-7 sm:p-14 flex flex-col md:flex-row justify-between items-center gap-6"
             style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%)" }}
           >
             {/* Decorative elements */}
@@ -415,19 +415,19 @@ function HomePage() {
 
         {/* ── Newsletter / CTA strip ────────────────────── */}
         <section className="py-10 pb-4">
-          <div className="rounded-3xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h3 className="text-2xl font-extrabold text-gray-900">Ready to explore?</h3>
+          <div className="rounded-2xl sm:rounded-3xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 p-6 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-5">
+            <div className="text-center md:text-left">
+              <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900">Ready to explore?</h3>
               <p className="text-gray-500 text-sm mt-1">Browse thousands of stays and book your next adventure today.</p>
             </div>
-            <div className="flex gap-3 flex-shrink-0">
-              <Link to="/explore" className="btn-primary px-6 py-3 text-sm">
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto flex-shrink-0">
+              <Link to="/explore" className="btn-primary px-6 py-3 text-sm justify-center">
                 Browse Properties
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 to="/about"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 px-6 py-3 rounded-2xl transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 px-6 py-3 rounded-2xl transition-all duration-200"
               >
                 Learn More
               </Link>
