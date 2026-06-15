@@ -1,0 +1,52 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependency directories
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+build/
+.out/
+
+# ─── SECRETS & ENV FILES ──────────────────────────────────────────────────────
+# Root, backend, and frontend .env files all contain secrets (JWT, Stripe, Mongo)
+.env
+.env.*
+.env.*.local
+backend/.env
+frontend/.env
+
+# ─── UPLOADS / USER CONTENT ───────────────────────────────────────────────────
+# Local uploads are served from Cloudinary in production; never commit binaries
+uploads/
+
+# ─── GENERATED / RUNTIME FILES ────────────────────────────────────────────────
+# PDF invoices are generated in OS tmp at runtime
+*.pdf
+/tmp/
+
+# OS temp and lock artifacts
+*.tmp
+*.cache
+
+# ─── EDITOR DIRECTORIES ───────────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Misc
+*.local
