@@ -13,12 +13,19 @@
   <img src="https://img.shields.io/badge/Deployed-Render_%2B_Vercel-black?style=for-the-badge&logo=vercel" />
 </p>
 
+<p>
+  <a href="https://vacation-home-rental-platform.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/%F0%9F%9A%80%20Live%20Demo-vacation--home--rental--platform.vercel.app-22c55e?style=for-the-badge" />
+  </a>
+</p>
+
 </div>
 
 ---
 
 ## 📌 Table of Contents
 
+- [Live Demo](#-live-demo)
 - [Overview](#-overview)
 - [Features](#-features)
 - [Architecture](#-architecture)
@@ -30,6 +37,17 @@
 - [User Roles](#-user-roles)
 - [Deployment](#-deployment)
 - [Author](#-author)
+
+---
+
+## 🚀 Live Demo
+
+| | Link |
+|---|---|
+| 🌐 **Frontend (Vercel)** | [vacation-home-rental-platform.vercel.app](https://vacation-home-rental-platform.vercel.app/) |
+| ⚙️ **Backend (Render)** | Singapore region — auto-scales on request |
+
+> **Note:** The Render free tier spins down after inactivity — the first request may take ~30 seconds to wake up.
 
 ---
 
