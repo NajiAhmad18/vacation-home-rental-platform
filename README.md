@@ -42,10 +42,10 @@
 
 ## 🚀 Live Demo
 
-| | Link |
-|---|---|
-| 🌐 **Frontend (Vercel)** | [vacation-home-rental-platform.vercel.app](https://vacation-home-rental-platform.vercel.app/) |
-| ⚙️ **Backend (Render)** | Singapore region — auto-scales on request |
+|                                | Link                                                                                       |
+| ------------------------------ | ------------------------------------------------------------------------------------------ |
+| 🌐**Frontend (Vercel)**  | [vacation-home-rental-platform.vercel.app](https://vacation-home-rental-platform.vercel.app/) |
+| ⚙️**Backend (Render)** | Singapore region — auto-scales on request                                                 |
 
 > **Note:** The Render free tier spins down after inactivity — the first request may take ~30 seconds to wake up.
 
@@ -62,6 +62,7 @@ Owners get a dedicated dashboard to list and manage their properties, while admi
 ## ✨ Features
 
 ### 👤 For Guests
+
 - 🔍 **Browse & Explore** — Search vacation homes with filters by location, price, bedrooms, and amenities
 - 🗺️ **Interactive Maps** — View property locations powered by **Google Maps API** with Places Autocomplete
 - 📅 **Real-Time Availability** — Live calendar showing booked dates to avoid double-bookings
@@ -72,12 +73,14 @@ Owners get a dedicated dashboard to list and manage their properties, while admi
 - 🔔 **Notifications** — In-app notification centre for booking updates
 
 ### 🏠 For Property Owners
+
 - 📋 **Owner Dashboard** — Manage all listed properties from a dedicated panel
 - 🖼️ **Cloudinary Image Uploads** — Drag-and-drop multi-image uploads with cloud storage
 - 📊 **Ledger Tracking** — Revenue and payout records per property
 - 🔒 **Property Status Control** — Toggle listings between active, hidden, or unavailable
 
 ### 🛡️ For Admins
+
 - ✅ **Approval Workflow** — Review and approve new property listings with document verification
 - 📈 **Platform-Wide Ledger** — Monitor all financial activity across the platform
 - 🗑️ **User & Content Management** — Full CRUD access over listings and accounts
@@ -110,41 +113,44 @@ Express API (Render)
 ## 🛠️ Tech Stack
 
 ### Frontend
-| Technology | Purpose |
-|---|---|
-| **React 19** | UI library |
-| **Vite 7** | Build tool & dev server |
-| **React Router v7** | Client-side routing |
-| **Zustand** | Global state management |
-| **Tailwind CSS v3** | Utility-first styling |
-| **Framer Motion** | Animations & transitions |
-| **@stripe/react-stripe-js** | Stripe payment UI |
-| **@react-google-maps/api** | Interactive maps |
-| **React Hook Form** | Form validation |
-| **Axios** | HTTP client |
-| **date-fns** | Date formatting & calculations |
-| **lucide-react** | Icon library |
-| **react-hot-toast** | Toast notifications |
+
+| Technology                        | Purpose                        |
+| --------------------------------- | ------------------------------ |
+| **React 19**                | UI library                     |
+| **Vite 7**                  | Build tool & dev server        |
+| **React Router v7**         | Client-side routing            |
+| **Zustand**                 | Global state management        |
+| **Tailwind CSS v3**         | Utility-first styling          |
+| **Framer Motion**           | Animations & transitions       |
+| **@stripe/react-stripe-js** | Stripe payment UI              |
+| **@react-google-maps/api**  | Interactive maps               |
+| **React Hook Form**         | Form validation                |
+| **Axios**                   | HTTP client                    |
+| **date-fns**                | Date formatting & calculations |
+| **lucide-react**            | Icon library                   |
+| **react-hot-toast**         | Toast notifications            |
 
 ### Backend
-| Technology | Purpose |
-|---|---|
-| **Node.js + Express 5** | REST API server |
-| **MongoDB + Mongoose** | NoSQL database & ODM |
-| **JWT + bcryptjs** | Authentication & password hashing |
-| **Cloudinary + Multer** | Image upload & storage |
-| **Stripe SDK** | Payment processing |
-| **PDFKit** | Server-side PDF invoice generation |
-| **cookie-parser** | Secure HTTP-only cookie sessions |
-| **dotenv** | Environment configuration |
+
+| Technology                    | Purpose                            |
+| ----------------------------- | ---------------------------------- |
+| **Node.js + Express 5** | REST API server                    |
+| **MongoDB + Mongoose**  | NoSQL database & ODM               |
+| **JWT + bcryptjs**      | Authentication & password hashing  |
+| **Cloudinary + Multer** | Image upload & storage             |
+| **Stripe SDK**          | Payment processing                 |
+| **PDFKit**              | Server-side PDF invoice generation |
+| **cookie-parser**       | Secure HTTP-only cookie sessions   |
+| **dotenv**              | Environment configuration          |
 
 ### Infrastructure
-| Service | Usage |
-|---|---|
-| **Render** | Backend hosting (Singapore region) |
-| **Vercel** | Frontend hosting & CDN |
-| **MongoDB Atlas** | Cloud database |
-| **Cloudinary** | Media storage & CDN |
+
+| Service                 | Usage                              |
+| ----------------------- | ---------------------------------- |
+| **Render**        | Backend hosting (Singapore region) |
+| **Vercel**        | Frontend hosting & CDN             |
+| **MongoDB Atlas** | Cloud database                     |
+| **Cloudinary**    | Media storage & CDN                |
 
 ---
 
@@ -310,28 +316,28 @@ VITE_GOOGLE_MAPS_API_KEY=AIza...
 
 All endpoints are prefixed with `/api`.
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `POST` | `/api/auth/signup` | ❌ | Register a new user or owner |
-| `POST` | `/api/auth/signin` | ❌ | Login & receive JWT cookie |
-| `POST` | `/api/auth/logout` | ✅ | Clear session cookie |
-| `GET` | `/api/user/me` | ✅ | Get current user profile |
-| `GET` | `/api/home` | ❌ | List all approved homes |
-| `GET` | `/api/home/:id` | ❌ | Get single property details |
-| `POST` | `/api/home` | ✅ Owner | Create a new listing |
-| `PUT` | `/api/home/:id` | ✅ Owner | Update a listing |
-| `DELETE` | `/api/home/:id` | ✅ Admin | Delete a listing |
-| `GET` | `/api/booking` | ✅ | Get user bookings |
-| `POST` | `/api/booking` | ✅ | Create a booking |
-| `GET` | `/api/payments` | ✅ | Get payment history |
-| `POST` | `/api/payments/create-intent` | ✅ | Create Stripe PaymentIntent |
-| `GET` | `/api/wishlist` | ✅ | Get user's wishlist |
-| `POST` | `/api/wishlist` | ✅ | Add to wishlist |
-| `DELETE` | `/api/wishlist/:id` | ✅ | Remove from wishlist |
-| `GET` | `/api/review/:homeId` | ❌ | Get reviews for a property |
-| `POST` | `/api/review` | ✅ | Submit a review |
-| `GET` | `/api/ledger` | ✅ Admin/Owner | Financial ledger records |
-| `GET` | `/invoices/:bookingId` | ✅ | Download HTML/PDF invoice |
+| Method     | Endpoint                        | Auth           | Description                  |
+| ---------- | ------------------------------- | -------------- | ---------------------------- |
+| `POST`   | `/api/auth/signup`            | ❌             | Register a new user or owner |
+| `POST`   | `/api/auth/signin`            | ❌             | Login & receive JWT cookie   |
+| `POST`   | `/api/auth/logout`            | ✅             | Clear session cookie         |
+| `GET`    | `/api/user/me`                | ✅             | Get current user profile     |
+| `GET`    | `/api/home`                   | ❌             | List all approved homes      |
+| `GET`    | `/api/home/:id`               | ❌             | Get single property details  |
+| `POST`   | `/api/home`                   | ✅ Owner       | Create a new listing         |
+| `PUT`    | `/api/home/:id`               | ✅ Owner       | Update a listing             |
+| `DELETE` | `/api/home/:id`               | ✅ Admin       | Delete a listing             |
+| `GET`    | `/api/booking`                | ✅             | Get user bookings            |
+| `POST`   | `/api/booking`                | ✅             | Create a booking             |
+| `GET`    | `/api/payments`               | ✅             | Get payment history          |
+| `POST`   | `/api/payments/create-intent` | ✅             | Create Stripe PaymentIntent  |
+| `GET`    | `/api/wishlist`               | ✅             | Get user's wishlist          |
+| `POST`   | `/api/wishlist`               | ✅             | Add to wishlist              |
+| `DELETE` | `/api/wishlist/:id`           | ✅             | Remove from wishlist         |
+| `GET`    | `/api/review/:homeId`         | ❌             | Get reviews for a property   |
+| `POST`   | `/api/review`                 | ✅             | Submit a review              |
+| `GET`    | `/api/ledger`                 | ✅ Admin/Owner | Financial ledger records     |
+| `GET`    | `/invoices/:bookingId`        | ✅             | Download HTML/PDF invoice    |
 
 > **Auth** = requires valid JWT cookie. **Admin** / **Owner** = additionally requires that role.
 
@@ -339,12 +345,12 @@ All endpoints are prefixed with `/api`.
 
 ## 👥 User Roles
 
-| Role | Access Level |
-|------|-------------|
-| **Guest** (unauthenticated) | Browse homes, view details, explore map |
-| **User** | Book homes, manage wishlist, submit reviews, download invoices |
-| **Room Owner** | List properties, manage own listings, view revenue ledger |
-| **Admin** | Approve listings, manage all users/homes, view full ledger |
+| Role                              | Access Level                                                   |
+| --------------------------------- | -------------------------------------------------------------- |
+| **Guest** (unauthenticated) | Browse homes, view details, explore map                        |
+| **User**                    | Book homes, manage wishlist, submit reviews, download invoices |
+| **Room Owner**              | List properties, manage own listings, view revenue ledger      |
+| **Admin**                   | Approve listings, manage all users/homes, view full ledger     |
 
 Routes are protected via `ProtectedRoute` on the frontend and `auth.middleware.js` + role checks on the backend.
 
@@ -380,9 +386,11 @@ The `frontend/vercel.json` handles SPA routing rewrites. Deploy by importing the
 
 ## 👨‍💻 Author
 
-**Naji Ahmad**
+**Naji Ahmad Javahir**
 
-Built with ❤️ as a full-stack showcase project. **LuxeKey** demonstrates production-grade architecture with real-world integrations including Stripe, Cloudinary, Google Maps, and PDF invoice generation.
+**LuxeKey** is an end-to-end full-stack application built to reflect production-ready engineering principles, featuring secure third-party integrations, scalable architecture, and a seamless user experience.
+
+Key integrations include Stripe for payments, Cloudinary for media management, Google Maps for location services, and PDF invoice generation.
 
 ---
 
