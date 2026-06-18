@@ -380,7 +380,7 @@ The `frontend/vercel.json` handles SPA routing rewrites. Deploy by importing the
 
 ## 👨‍💻 Author
 
-**Shiham Ahamed**
+**Naji Ahmad**
 
 Built with ❤️ as a full-stack showcase project. **LuxeKey** demonstrates production-grade architecture with real-world integrations including Stripe, Cloudinary, Google Maps, and PDF invoice generation.
 
