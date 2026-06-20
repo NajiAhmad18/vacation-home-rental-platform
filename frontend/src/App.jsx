@@ -42,7 +42,7 @@ if (!pk || !/^pk_(test|live)_/.test(pk)) {
 }
 
 // ✅ Create once at module scope
-const stripePromise = loadStripe(pk);
+const stripePromise = pk && /^pk_(test|live)_/.test(pk) ? loadStripe(pk) : null;
 
 function App() {
   const user = useAuthStore((state) => state.user);
