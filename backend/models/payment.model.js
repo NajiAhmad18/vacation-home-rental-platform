@@ -25,7 +25,7 @@ const PaymentSchema = new mongoose.Schema(
     // Provider / status
     provider: {
       type: String,
-      enum: ["stripe"],
+      enum: ["stripe", "offline_mock"],
       default: "stripe",
       required: true,
     },
