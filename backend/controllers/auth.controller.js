@@ -190,7 +190,7 @@ export const updateProfile = async (req, res) => {
         }
         fs.renameSync(req.file.path, targetPath);
         
-        const port = process.env.PORT || 5000;
+        const port = process.env.PORT || 5001;
         updates["profile.profileImage"] = `http://localhost:${port}/uploads/${newFilename}`;
       }
     }

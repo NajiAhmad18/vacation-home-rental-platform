@@ -32,7 +32,7 @@ export const createHome = async (req, res) => {
         const newFilename = `${file.filename}${ext}`;
         const targetPath = path.join("uploads", newFilename);
         fs.renameSync(file.path, targetPath);
-        const port = process.env.PORT || 5000;
+        const port = process.env.PORT || 5001;
         return `http://localhost:${port}/uploads/${newFilename}`;
       });
     }
@@ -152,7 +152,7 @@ export const updateHome = async (req, res) => {
           const newFilename = `${file.filename}${ext}`;
           const targetPath = path.join("uploads", newFilename);
           fs.renameSync(file.path, targetPath);
-          const port = process.env.PORT || 5000;
+          const port = process.env.PORT || 5001;
           return `http://localhost:${port}/uploads/${newFilename}`;
         });
       }

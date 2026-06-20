@@ -16,10 +16,32 @@ import os from "os"
 import { connectDB } from './lib/connectDB.js';
 
 const app = express();
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5001
 console.log("ENV TEST:", process.env.CLOUDINARY_API_KEY);
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",").map(o => o.trim()) ?? [];
+
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(",").map(o => o.trim()) ?? ["http://localhost:5173", "http://127.0.0.1:5173"],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, or postman)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is in the allowedOrigins list
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // Allow any localhost/127.0.0.1 with any port in development
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+      return callback(null, true);
+    }
+    
+    // Fallback: allow default local hosts
+    if (["http://localhost:5173", "http://127.0.0.1:5173"].includes(origin)) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 

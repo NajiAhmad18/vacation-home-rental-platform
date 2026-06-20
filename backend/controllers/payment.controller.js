@@ -292,7 +292,7 @@ export const markPaymentSuccess = async (req, res) => {
     try {
       const homeDoc = await Home.findById(booking.homeId).select("title");
       const inv = await generateInvoice({ booking, payment, home: homeDoc });
-      const baseUrl = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
+      const baseUrl = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 5001}`;
       invoiceUrl = `${baseUrl}/invoices/${inv.filename}`;
       payment.invoiceUrl = invoiceUrl;
     } catch (e) {
