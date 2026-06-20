@@ -45,13 +45,11 @@ export default function RoomManagement() {
           <div className="flex items-center justify-between">
             {/* Image + basic info */}
             <div className="flex items-center gap-4">
-              {home.images?.[0] && (
-                <img
-                  src={home.images[0]}
-                  alt={home.title}
-                  className="w-24 h-24 object-cover rounded-xl border"
-                />
-              )}
+              <img
+                src={home.images?.[0] || "/default-home.jpg"}
+                alt={home.title}
+                className="w-24 h-24 object-cover rounded-xl border"
+              />
               <div>
                 <h2 className="font-semibold text-lg text-gray-800">
                   {home.title}

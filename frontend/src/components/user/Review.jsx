@@ -88,7 +88,7 @@ export default function Review() {
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
           <div className="grid md:grid-cols-2 gap-0">
             <div className="relative h-64 md:h-full min-h-[300px]">
-              <img src={home.images?.[0]} alt={home.title} className="w-full h-full object-cover" />
+              <img src={home.images?.[0] || "/default-home.jpg"} alt={home.title} className="w-full h-full object-cover" />
               <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full font-semibold text-blue-600">
                 LKR {home.price}
               </div>

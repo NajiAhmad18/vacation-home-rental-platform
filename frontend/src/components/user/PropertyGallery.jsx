@@ -5,12 +5,12 @@ const PropertyGallery = ({ images = [], title = "" }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);
 
-  if (!images.length) return null;
+  const displayImages = images && images.length > 0 ? images : ["/default-home.jpg"];
 
   const nextImage = () =>
-    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    setCurrentImageIndex((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1));
   const prevImage = () =>
-    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    setCurrentImageIndex((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1));
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
@@ -35,7 +35,7 @@ const PropertyGallery = ({ images = [], title = "" }) => {
           onClick={openModal}
         >
           <img
-            src={images[currentImageIndex]}
+            src={displayImages[currentImageIndex]}
             alt={`${title} ${currentImageIndex + 1}`}
             className="w-full h-full object-cover "
           />
@@ -43,21 +43,23 @@ const PropertyGallery = ({ images = [], title = "" }) => {
       </div>
 
       {/* Thumbnails */}
-      <div className="flex gap-3 overflow-x-auto pb-2">
-        {images.map((img, idx) => (
-          <img
-            key={idx}
-            src={img}
-            alt={`Thumbnail ${idx + 1}`}
-            onClick={() => setCurrentImageIndex(idx)}
-            className={`h-20 w-28 object-cover rounded-lg cursor-pointer border-2 ${
-              idx === currentImageIndex
-                ? "border-blue-500"
-                : "border-transparent"
-            }`}
-          />
-        ))}
-      </div>
+      {displayImages.length > 1 && (
+        <div className="flex gap-3 overflow-x-auto pb-2">
+          {displayImages.map((img, idx) => (
+            <img
+              key={idx}
+              src={img}
+              alt={`Thumbnail ${idx + 1}`}
+              onClick={() => setCurrentImageIndex(idx)}
+              className={`h-20 w-28 object-cover rounded-lg cursor-pointer border-2 ${
+                idx === currentImageIndex
+                  ? "border-blue-500"
+                  : "border-transparent"
+              }`}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Modal */}
       {showModal && (
@@ -72,12 +74,12 @@ const PropertyGallery = ({ images = [], title = "" }) => {
             </button>
 
             <img
-              src={images[currentImageIndex]}
+              src={displayImages[currentImageIndex]}
               alt={`${title} ${currentImageIndex + 1}`}
               className="max-h-[80vh] object-contain rounded-xl shadow-lg"
             />
 
-            {images.length > 1 && (
+            {displayImages.length > 1 && (
               <>
                 <button
                   onClick={prevImage}
@@ -96,24 +98,26 @@ const PropertyGallery = ({ images = [], title = "" }) => {
               </>
             )}
 
-            <div className="mt-6 flex gap-2 overflow-x-auto max-w-full">
-              {images.map((img, idx) => (
-                <img
-                  key={idx}
-                  src={img}
-                  alt={`Thumbnail ${idx + 1}`}
-                  onClick={() => setCurrentImageIndex(idx)}
-                  className={`h-16 w-24 object-cover rounded-lg cursor-pointer border-2 ${
-                    idx === currentImageIndex
-                      ? "border-blue-500"
-                      : "border-transparent"
-                  }`}
-                />
-              ))}
-            </div>
+            {displayImages.length > 1 && (
+              <div className="mt-6 flex gap-2 overflow-x-auto max-w-full">
+                {displayImages.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img}
+                    alt={`Thumbnail ${idx + 1}`}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className={`h-16 w-24 object-cover rounded-lg cursor-pointer border-2 ${
+                      idx === currentImageIndex
+                        ? "border-blue-500"
+                        : "border-transparent"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
 
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white text-sm bg-black bg-opacity-50 px-4 py-1 rounded-full">
-              {currentImageIndex + 1} / {images.length}
+              {currentImageIndex + 1} / {displayImages.length}
             </div>
           </div>
         </div>
