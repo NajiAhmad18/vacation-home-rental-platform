@@ -19,7 +19,7 @@ const app = express();
 const PORT = process.env.PORT || 5000
 console.log("ENV TEST:", process.env.CLOUDINARY_API_KEY);
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(",").map(o => o.trim()) ?? ["http://localhost:5173"],
+  origin: process.env.ALLOWED_ORIGINS?.split(",").map(o => o.trim()) ?? ["http://localhost:5173", "http://127.0.0.1:5173"],
   credentials: true
 }));
 
