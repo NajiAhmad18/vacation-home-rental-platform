@@ -51,9 +51,6 @@ const FEES = Object.freeze({
  * ============================================================ */
 export const createPaymentIntent = async (req, res) => {
   try {
-    if (!stripe) {
-      return res.status(500).json({ error: "Stripe is not configured on this server. Payments are currently disabled." });
-    }
     const { bookingId } = req.body;
     if (!bookingId) return res.status(400).json({ error: "bookingId is required" });
 
@@ -98,27 +95,34 @@ export const createPaymentIntent = async (req, res) => {
     if (!Number.isFinite(amountLkr) || amountLkr <= 0) {
       amountLkr = base + cleaningFee + serviceFee + taxAmount;
       booking.totalPrice = amountLkr;
-      // Persist fees used for this booking to make them immutable
       booking.feeCleaning = cleaningFee;
       booking.feeService = serviceFee;
       booking.feeTax = taxAmount;
       await booking.save();
     } else {
-      // If totalPrice was preset, ensure fee fields are persisted for consistency
       if (booking.feeCleaning == null) booking.feeCleaning = cleaningFee;
       if (booking.feeService == null) booking.feeService = serviceFee;
       if (booking.feeTax == null) booking.feeTax = taxAmount;
       await booking.save();
     }
 
-    // 4) Create PaymentIntent (Stripe expects minor units)
-    const pi = await stripe.paymentIntents.create({
-      amount: toMinorUnits(amountLkr),
-      currency, // "lkr"
-      automatic_payment_methods: { enabled: true },
-      receipt_email: receiptEmail, // only sent if defined
-      metadata: { bookingId: String(bookingId), homeId: String(booking.homeId) },
-    });
+    let pi;
+    if (!stripe) {
+      console.warn("WARNING: Stripe is not configured. Generating mock payment intent.");
+      pi = {
+        id: `pi_mock_${Date.now()}`,
+        client_secret: `pi_mock_secret_${Date.now()}`,
+      };
+    } else {
+      // 4) Create PaymentIntent (Stripe expects minor units)
+      pi = await stripe.paymentIntents.create({
+        amount: toMinorUnits(amountLkr),
+        currency,
+        automatic_payment_methods: { enabled: true },
+        receipt_email: receiptEmail,
+        metadata: { bookingId: String(bookingId), homeId: String(booking.homeId) },
+      });
+    }
 
     // 5) Persist PI info
     booking.paymentIntentId = pi.id;
@@ -129,13 +133,12 @@ export const createPaymentIntent = async (req, res) => {
     const payment = await Payment.create({
       bookingId,
       ownerId: home.ownerId,
-      provider: "stripe",
+      provider: stripe ? "stripe" : "offline_mock",
       providerPaymentId: pi.id,
       status: "pending",
       amount: round2(amountLkr),
       currency,
       method: "card",
-      // Breakdown fields (finalized on success too)
       baseAmount: round2(base),
       cleaningFee: round2(cleaningFee),
       serviceFee: round2(serviceFee),
@@ -164,9 +167,6 @@ export const createPaymentIntent = async (req, res) => {
  * ============================================================ */
 export const markPaymentSuccess = async (req, res) => {
   try {
-    if (!stripe) {
-      return res.status(500).json({ error: "Stripe is not configured on this server. Payments are currently disabled." });
-    }
     const payment = await Payment.findById(req.params.id);
     if (!payment) return res.status(404).json({ error: "Payment not found" });
     if (!payment.providerPaymentId) {
@@ -176,10 +176,12 @@ export const markPaymentSuccess = async (req, res) => {
     const booking = await Booking.findById(payment.bookingId);
     if (!booking) return res.status(404).json({ error: "Linked booking not found" });
 
+    const isMock = payment.providerPaymentId.startsWith("pi_mock_");
+
     // Idempotent path
     if (booking.status === "active" && payment.status === "succeeded") {
       let receiptUrl = payment.receiptUrl ?? null;
-      if (!receiptUrl) {
+      if (!receiptUrl && !isMock && stripe) {
         try {
           const pi = await stripe.paymentIntents.retrieve(payment.providerPaymentId, { expand: ["latest_charge"] });
           if (pi?.latest_charge && typeof pi.latest_charge === "object") {
@@ -193,7 +195,7 @@ export const markPaymentSuccess = async (req, res) => {
         bookingId: String(booking._id),
         paymentId: String(payment._id),
         invoiceUrl: payment.invoiceUrl ?? null,
-        receiptUrl,
+        receiptUrl: receiptUrl || "https://stripe.com/mock-receipt",
       });
     }
 
@@ -201,23 +203,39 @@ export const markPaymentSuccess = async (req, res) => {
       return res.status(409).json({ error: `Booking not in confirmable state (${booking.status})` });
     }
 
-    // Verify with Stripe
-    const pi = await stripe.paymentIntents.retrieve(payment.providerPaymentId, { expand: ["latest_charge"] });
+    // Verify with Stripe or Mock
+    let pi;
+    if (isMock) {
+      pi = {
+        status: "succeeded",
+        latest_charge: { receipt_url: "https://stripe.com/mock-receipt" },
+      };
+    } else {
+      if (!stripe) {
+        return res.status(500).json({ error: "Stripe is not configured on this server." });
+      }
+      pi = await stripe.paymentIntents.retrieve(payment.providerPaymentId, { expand: ["latest_charge"] });
+    }
+
     if (pi.status !== "succeeded") {
       return res.status(400).json({ error: `PaymentIntent not succeeded (${pi.status})` });
     }
 
     // Stripe receipt URL (if any)
     let receiptUrl = null;
-    if (pi.latest_charge && typeof pi.latest_charge === "object") {
-      receiptUrl = pi.latest_charge.receipt_url || null;
+    if (isMock) {
+      receiptUrl = "https://stripe.com/mock-receipt";
     } else {
-      const chargeId = pi.latest_charge || pi.charges?.data?.[0]?.id;
-      if (chargeId) {
-        try {
-          const charge = await stripe.charges.retrieve(chargeId);
-          receiptUrl = charge?.receipt_url || null;
-        } catch {}
+      if (pi.latest_charge && typeof pi.latest_charge === "object") {
+        receiptUrl = pi.latest_charge.receipt_url || null;
+      } else {
+        const chargeId = pi.latest_charge || pi.charges?.data?.[0]?.id;
+        if (chargeId && stripe) {
+          try {
+            const charge = await stripe.charges.retrieve(chargeId);
+            receiptUrl = charge?.receipt_url || null;
+          } catch {}
+        }
       }
     }
 

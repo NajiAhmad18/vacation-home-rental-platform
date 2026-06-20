@@ -29,7 +29,6 @@ export default function PaymentForm({ bookingId, displayAmount = 0, currency = "
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!stripe || !elements) return;
 
     setLoading(true);
     setMsg("");
@@ -42,9 +41,14 @@ export default function PaymentForm({ bookingId, displayAmount = 0, currency = "
       if (typeof amount === "number") setUiAmount(amount);
       if (serverCurrency) setUiCurrency(serverCurrency.toUpperCase());
 
-      // 2) Confirm with Stripe, then finalize on backend
-      const card = elements.getElement(CardElement);
-      if (!card) throw new Error("CardElement not found");
+      const isMockIntent = clientSecret?.startsWith("pi_mock_");
+      if (!isMockIntent && (!stripe || !elements)) {
+        throw new Error("Stripe elements are not fully initialized.");
+      }
+
+      // 2) Confirm payment, then finalize on backend
+      const card = isMockIntent ? null : elements.getElement(CardElement);
+      if (!isMockIntent && !card) throw new Error("CardElement not found");
 
       const { stripe: paymentIntent, server } = await confirmAndFinalize({
         stripe,
@@ -89,24 +93,35 @@ export default function PaymentForm({ bookingId, displayAmount = 0, currency = "
       <form onSubmit={onSubmit} className="space-y-6">
         <label className="block">
           <span className="block text-sm font-medium text-slate-700 mb-2">Card details</span>
-          <div className="rounded-xl border border-slate-300 px-3 py-3 bg-white focus-within:ring-2 focus-within:ring-blue-600 focus-within:border-blue-600 transition">
-            <CardElement options={cardElementOptions} />
-          </div>
+          {stripe ? (
+            <div className="rounded-xl border border-slate-300 px-3 py-3 bg-white focus-within:ring-2 focus-within:ring-blue-600 focus-within:border-blue-600 transition">
+              <CardElement options={cardElementOptions} />
+            </div>
+          ) : (
+            <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-4 text-amber-800 text-sm flex flex-col gap-1.5 shadow-sm">
+              <p className="font-semibold flex items-center gap-1.5 text-amber-800">
+                ⚠️ Stripe Payment Config Missing
+              </p>
+              <p className="text-xs text-amber-700 leading-relaxed">
+                Stripe keys are not set in the server's environment. The payment will run in <strong>Demo Simulation Mode</strong>. No real credit card details are required.
+              </p>
+            </div>
+          )}
         </label>
 
         <button
           type="submit"
-          disabled={!stripe || loading || amountInvalid}
+          disabled={loading || amountInvalid}
           className={`w-full h-12 rounded-xl text-white text-lg font-semibold shadow-sm transition
-            ${(!stripe || loading || amountInvalid) ? "bg-blue-600/60 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}
+            ${(loading || amountInvalid) ? "bg-blue-600/60 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}
             focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2`}
-          aria-disabled={!stripe || loading || amountInvalid}
+          aria-disabled={loading || amountInvalid}
         >
-          {loading ? "Processing…" : `Pay ${fmt(uiAmount, uiCurrency)}`}
+          {loading ? "Processing…" : `Pay ${fmt(uiAmount, uiCurrency)} ${!stripe ? "(Demo Simulation)" : ""}`}
         </button>
 
         {msg && (
-          <p className={`text-sm ${msg.includes("✅") ? "text-green-600" : "text-red-600"}`}>
+          <p className={`text-sm ${msg.includes("✅") || msg.toLowerCase().includes("success") ? "text-green-600" : "text-red-600"}`}>
             {msg}
           </p>
         )}

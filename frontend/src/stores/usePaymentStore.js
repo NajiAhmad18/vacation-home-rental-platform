@@ -89,8 +89,24 @@ export const usePaymentStore = create((set, get) => ({
 
   /* lifecycle */
   confirmAndFinalize: async ({ stripe, elements, clientSecret, paymentId, params }) => {
+    if (clientSecret?.startsWith("pi_mock_")) {
+      set({ loading: true, error: null });
+      get().setPaymentStatus(paymentId, "processing");
+      try {
+        const finalize = await get().markPaymentSuccess(paymentId);
+        set({ loading: false });
+        return {
+          stripe: { status: "succeeded", id: paymentId },
+          server: finalize,
+        };
+      } catch (err) {
+        get().setPaymentStatus(paymentId, "failed");
+        set({ loading: false, error: err.message });
+        throw err;
+      }
+    }
+
     if (!stripe || !elements) throw new Error("Stripe and Elements are required");
-    if (!clientSecret || !paymentId) throw new Error("clientSecret and paymentId are required");
 
     set({ loading: true, error: null });
     get().setPaymentStatus(paymentId, "processing");
