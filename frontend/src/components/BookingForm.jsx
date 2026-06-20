@@ -10,6 +10,36 @@ import {
   CheckCircle, ArrowRight, Info, Shield,
 } from "lucide-react";
 
+/* ── Field Component ────────────────────────── */
+const Field = ({ icon: Icon, id, name, type = "text", placeholder, value, onChange, error, disabled }) => (
+  <div>
+    <label htmlFor={id} className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+      {placeholder}
+    </label>
+    <div className="relative">
+      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <Icon className="h-4 w-4 text-gray-400" />
+      </div>
+      <input
+        id={id}
+        name={name}
+        type={type}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+        placeholder={placeholder}
+        className={`input-premium pl-11 ${error ? "error" : ""} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+      />
+    </div>
+    {error && (
+      <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+        {error}
+      </p>
+    )}
+  </div>
+);
+
 export default function BookingForm({ selectedDates, setSelectedDates, bookedDates }) {
   const [form, setForm] = useState({ name: "", phone: "", idCard: "", acceptPolicy: false });
   const [errors, setErrors] = useState({});
@@ -167,37 +197,6 @@ export default function BookingForm({ selectedDates, setSelectedDates, bookedDat
       setSelectedDates({ startDate: "", endDate: "" });
     }
   };
-
-  /* ── Field Component ────────────────────────── */
-  const Field = ({ icon: Icon, id, name, type = "text", placeholder, value, onChange, error, disabled }) => (
-    <div>
-      <label htmlFor={id} className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
-        {placeholder}
-      </label>
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <Icon className="h-4 w-4 text-gray-400" />
-        </div>
-        <input
-          id={id}
-          name={name}
-          type={type}
-          value={value}
-          onChange={onChange}
-          disabled={disabled}
-          placeholder={placeholder}
-          className={`input-premium pl-11 ${error ? "error" : ""} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
-        />
-      </div>
-      {error && (
-        <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
-          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-          {error}
-        </p>
-      )}
-    </div>
-  );
-
   return (
     <form onSubmit={handleSubmit} className="space-y-5" noValidate>
       {/* Guest info */}

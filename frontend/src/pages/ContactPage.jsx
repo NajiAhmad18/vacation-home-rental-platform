@@ -11,6 +11,37 @@ const FAQS = [
   { q: "What happens if there's an issue at check-in?", a: "Contact our 24/7 support team immediately. We'll coordinate with the host and provide alternative arrangements if needed." },
 ];
 
+const Field = ({ id, name, type = "text", placeholder, value, onChange, error, icon: Icon, rows }) => (
+  <div>
+    <label htmlFor={id} className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+      {placeholder}
+    </label>
+    <div className="relative">
+      {Icon && (
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-start pt-3.5 pointer-events-none">
+          <Icon className="h-4 w-4 text-gray-400" />
+        </div>
+      )}
+      {rows ? (
+        <textarea
+          id={id} name={name} value={value} onChange={onChange} rows={rows} placeholder={placeholder}
+          className={`input-premium ${Icon ? "pl-11" : ""} resize-none ${error ? "error" : ""}`}
+        />
+      ) : (
+        <input
+          id={id} name={name} type={type} value={value} onChange={onChange} placeholder={placeholder}
+          className={`input-premium ${Icon ? "pl-11" : ""} ${error ? "error" : ""}`}
+        />
+      )}
+    </div>
+    {error && (
+      <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /> {error}
+      </p>
+    )}
+  </div>
+);
+
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [errors, setErrors] = useState({});
@@ -51,37 +82,6 @@ export default function ContactPage() {
     setSubmitted(true);
     setForm({ name: "", email: "", subject: "", message: "" });
   };
-
-  const Field = ({ id, name, type = "text", placeholder, value, onChange, error, icon: Icon, rows }) => (
-    <div>
-      <label htmlFor={id} className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
-        {placeholder}
-      </label>
-      <div className="relative">
-        {Icon && (
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-start pt-3.5 pointer-events-none">
-            <Icon className="h-4 w-4 text-gray-400" />
-          </div>
-        )}
-        {rows ? (
-          <textarea
-            id={id} name={name} value={value} onChange={onChange} rows={rows} placeholder={placeholder}
-            className={`input-premium ${Icon ? "pl-11" : ""} resize-none ${error ? "error" : ""}`}
-          />
-        ) : (
-          <input
-            id={id} name={name} type={type} value={value} onChange={onChange} placeholder={placeholder}
-            className={`input-premium ${Icon ? "pl-11" : ""} ${error ? "error" : ""}`}
-          />
-        )}
-      </div>
-      {error && (
-        <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
-          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /> {error}
-        </p>
-      )}
-    </div>
-  );
 
   return (
     <div className="min-h-screen pb-20 page-enter" style={{ background: "var(--surface)" }}>

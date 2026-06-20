@@ -72,7 +72,14 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/home/:id" element={<PropertyDetailPage />} />
-            <Route path="/book-home/:id" element={<BookHome />} />
+            <Route
+              path="/book-home/:id"
+              element={
+                <ProtectedRoute>
+                  <BookHome />
+                </ProtectedRoute>
+              }
+            />
 
             {/* 🔒 Protected User Routes */}
             <Route
