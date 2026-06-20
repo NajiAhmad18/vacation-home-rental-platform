@@ -4,7 +4,7 @@ import { CheckCircle, Home, Download, FileText, ExternalLink, ArrowLeft, Sparkle
 
 const API_BASE =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ||
-  process.env.REACT_APP_API_BASE_URL ||
+  (typeof process !== "undefined" && process.env?.REACT_APP_API_BASE_URL) ||
   window.location.origin;
 const baseNoSlash = String(API_BASE).replace(/\/+$/, "");
 
