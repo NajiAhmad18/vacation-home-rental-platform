@@ -7,7 +7,9 @@ import User from "../models/user.model.js";
 import { createLedgerEntryService } from "./ledger.controller.js";
 import { generateInvoice } from "../utils/generateInvoice.js";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY)
+  : null;
 
 /* ---------- helpers ---------- */
 const toMinorUnits = (amount) => Math.round(Number(amount || 0) * 100);
@@ -49,6 +51,9 @@ const FEES = Object.freeze({
  * ============================================================ */
 export const createPaymentIntent = async (req, res) => {
   try {
+    if (!stripe) {
+      return res.status(500).json({ error: "Stripe is not configured on this server. Payments are currently disabled." });
+    }
     const { bookingId } = req.body;
     if (!bookingId) return res.status(400).json({ error: "bookingId is required" });
 
@@ -159,6 +164,9 @@ export const createPaymentIntent = async (req, res) => {
  * ============================================================ */
 export const markPaymentSuccess = async (req, res) => {
   try {
+    if (!stripe) {
+      return res.status(500).json({ error: "Stripe is not configured on this server. Payments are currently disabled." });
+    }
     const payment = await Payment.findById(req.params.id);
     if (!payment) return res.status(404).json({ error: "Payment not found" });
     if (!payment.providerPaymentId) {
@@ -330,6 +338,9 @@ export const markPaymentSuccess = async (req, res) => {
  * ============================================================ */
 export const refundPayment = async (req, res) => {
   try {
+    if (!stripe) {
+      return res.status(500).json({ error: "Stripe is not configured on this server. Payments are currently disabled." });
+    }
     const payment = await Payment.findById(req.params.id);
     if (!payment) return res.status(404).json({ error: "Payment not found" });
 
@@ -568,7 +579,7 @@ export const getPaymentById = async (req, res) => {
 
     // Try to surface Stripe receipt (best-effort)
     let receiptUrl = p.receiptUrl || null;
-    if (!receiptUrl && p.providerPaymentId) {
+    if (!receiptUrl && p.providerPaymentId && stripe) {
       try {
         const pi = await stripe.paymentIntents.retrieve(p.providerPaymentId, { expand: ["latest_charge"] });
         if (pi?.latest_charge && typeof pi.latest_charge === "object") {
@@ -668,7 +679,7 @@ export const deletePayment = async (req, res) => {
     }
 
     // Best-effort: cancel PI if still cancelable
-    if (payment.providerPaymentId) {
+    if (payment.providerPaymentId && stripe) {
       try {
         await stripe.paymentIntents.cancel(payment.providerPaymentId);
       } catch {

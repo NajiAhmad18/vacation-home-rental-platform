@@ -171,13 +171,28 @@ export const updateProfile = async (req, res) => {
     };
 
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "profile_images",
-        public_id: `${req.user._id}_profile`,
-        overwrite: true,
-      });
-      updates["profile.profileImage"] = result.secure_url;
-      fs.unlinkSync(req.file.path);
+      if (process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_CLOUD_NAME) {
+        const result = await cloudinary.uploader.upload(req.file.path, {
+          folder: "profile_images",
+          public_id: `${req.user._id}_profile`,
+          overwrite: true,
+        });
+        updates["profile.profileImage"] = result.secure_url;
+        fs.unlinkSync(req.file.path);
+      } else {
+        console.warn("WARNING: Cloudinary credentials missing. Saving profile image locally.");
+        const ext = path.extname(req.file.originalname) || ".jpg";
+        const newFilename = `${req.user._id}_profile${ext}`;
+        const targetPath = path.join("uploads", newFilename);
+        
+        if (fs.existsSync(targetPath)) {
+          fs.unlinkSync(targetPath);
+        }
+        fs.renameSync(req.file.path, targetPath);
+        
+        const port = process.env.PORT || 5000;
+        updates["profile.profileImage"] = `http://localhost:${port}/uploads/${newFilename}`;
+      }
     }
 
     const user = await User.findByIdAndUpdate(req.user._id, updates, {

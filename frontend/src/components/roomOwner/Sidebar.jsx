@@ -13,7 +13,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 
-const Sidebar = ({ activeSection, setActiveSection }) => {
+const Sidebar = ({ activeSection, setActiveSection, onSignOut }) => {
   const menuItems = [
     // Dashboard
     { id: "dashboard", label: "Dashboard", icon: Home },
@@ -98,7 +98,10 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
 
         {/* Sign Out */}
         <div className="mt-4 pt-4 border-t border-slate-700">
-          <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-red-600 hover:text-white transition-all duration-200">
+          <button
+            onClick={onSignOut}
+            className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-red-600 hover:text-white transition-all duration-200"
+          >
             <LogOut size={20} />
             <span className="font-medium">Sign Out</span>
           </button>

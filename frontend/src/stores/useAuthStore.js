@@ -116,7 +116,7 @@ export const useAuthStore = create((set) => ({
   verifyRoomOwner: async (userId, status, reason) => {
     set({ loading: true, error: null });
     try {
-      const res = await axiosInstance.put(`/auth/verify-room-owner/${userId}`, {
+      const res = await axiosInstance.put(`/auth/admin/verify-room-owner/${userId}`, {
         status,
         reason,
       });
@@ -128,6 +128,56 @@ export const useAuthStore = create((set) => ({
         error.response?.data?.message ||
         error.message ||
         "Failed to verify room owner";
+      set({ loading: false, error: message });
+      throw new Error(message);
+    }
+  },
+
+  // 👮 Fetch all users (Admin only)
+  fetchAllUsers: async () => {
+    set({ loading: true, error: null });
+    try {
+      const res = await axiosInstance.get("/user");
+      set({ loading: false });
+      return res.data.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch users";
+      set({ loading: false, error: message });
+      throw new Error(message);
+    }
+  },
+
+  // 👮 Delete a user (Admin only)
+  deleteUser: async (userId) => {
+    set({ loading: true, error: null });
+    try {
+      await axiosInstance.delete(`/user/${userId}`);
+      set({ loading: false });
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to delete user";
+      set({ loading: false, error: message });
+      throw new Error(message);
+    }
+  },
+
+  // 👮 Update a user's role (Admin only)
+  updateUserRole: async (userId, role) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await axiosInstance.put(`/user/${userId}/role`, { role });
+      set({ loading: false });
+      return res.data.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to update role";
       set({ loading: false, error: message });
       throw new Error(message);
     }

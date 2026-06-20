@@ -1,6 +1,7 @@
 import Home from "../models/home.model.js";
 import cloudinary from "../lib/cloudinary.js";
 import fs from "fs";
+import path from "path";
 
 export const createHome = async (req, res) => {
   try {
@@ -10,22 +11,31 @@ export const createHome = async (req, res) => {
     console.log("Incoming home data:", body);
     console.log("Cloudinary config:", cloudinary.config());
 
-    if (!process.env.CLOUDINARY_API_KEY) {
-      throw new Error("Missing Cloudinary API key");
+    let imageUrls = [];
+    if (process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_CLOUD_NAME) {
+      // ✅ Upload images to Cloudinary
+      const imageUploadPromises = files.map((file) =>
+        cloudinary.uploader.upload(file.path, {
+          folder: "homes",
+        })
+      );
+
+      const uploadedImages = await Promise.all(imageUploadPromises);
+      imageUrls = uploadedImages.map((img) => img.secure_url);
+
+      // ✅ Clean up local files
+      files.forEach((file) => fs.unlinkSync(file.path));
+    } else {
+      console.warn("WARNING: Cloudinary credentials missing. Saving images locally.");
+      imageUrls = files.map((file) => {
+        const ext = path.extname(file.originalname) || ".jpg";
+        const newFilename = `${file.filename}${ext}`;
+        const targetPath = path.join("uploads", newFilename);
+        fs.renameSync(file.path, targetPath);
+        const port = process.env.PORT || 5000;
+        return `http://localhost:${port}/uploads/${newFilename}`;
+      });
     }
-
-    // ✅ Upload images to Cloudinary
-    const imageUploadPromises = files.map((file) =>
-      cloudinary.uploader.upload(file.path, {
-        folder: "homes",
-      })
-    );
-
-    const uploadedImages = await Promise.all(imageUploadPromises);
-    const imageUrls = uploadedImages.map((img) => img.secure_url);
-
-    // ✅ Clean up local files
-    files.forEach((file) => fs.unlinkSync(file.path));
 
     // ✅ Restructure location fields
     const location = {
@@ -120,27 +130,43 @@ export const updateHome = async (req, res) => {
 
     // Parse structured data and existing images
     const parsedData = JSON.parse(req.body.data || "{}");
-    const existingImages = req.body.existingImages
-      ? JSON.parse(req.body.existingImages)
-      : [];
 
     let newImageUrls = [];
 
-    // ✅ Handle new image uploads to Cloudinary
+    // ✅ Handle new image uploads
     if (req.files && req.files.length > 0) {
-      const uploadPromises = req.files.map((file) =>
-        cloudinary.uploader.upload(file.path, { folder: "homes" })
-      );
+      if (process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_CLOUD_NAME) {
+        const uploadPromises = req.files.map((file) =>
+          cloudinary.uploader.upload(file.path, { folder: "homes" })
+        );
 
-      const uploaded = await Promise.all(uploadPromises);
-      newImageUrls = uploaded.map((img) => img.secure_url);
+        const uploaded = await Promise.all(uploadPromises);
+        newImageUrls = uploaded.map((img) => img.secure_url);
 
-      // cleanup local temp files
-      req.files.forEach((file) => fs.unlinkSync(file.path));
+        // cleanup local temp files
+        req.files.forEach((file) => fs.unlinkSync(file.path));
+      } else {
+        console.warn("WARNING: Cloudinary credentials missing. Saving images locally.");
+        newImageUrls = req.files.map((file) => {
+          const ext = path.extname(file.originalname) || ".jpg";
+          const newFilename = `${file.filename}${ext}`;
+          const targetPath = path.join("uploads", newFilename);
+          fs.renameSync(file.path, targetPath);
+          const port = process.env.PORT || 5000;
+          return `http://localhost:${port}/uploads/${newFilename}`;
+        });
+      }
     }
 
     // ✅ Final images = old ones (kept) + newly uploaded
-    const finalImages = [...existingImages, ...newImageUrls];
+    let finalImages;
+    if (req.body.existingImages !== undefined) {
+      const existingImages = JSON.parse(req.body.existingImages);
+      finalImages = [...existingImages, ...newImageUrls];
+    } else {
+      const currentHome = await Home.findById(id);
+      finalImages = [...(currentHome?.images || []), ...newImageUrls];
+    }
 
     const updatedHome = await Home.findByIdAndUpdate(
       id,

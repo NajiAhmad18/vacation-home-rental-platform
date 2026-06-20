@@ -1,8 +1,11 @@
 import React from 'react';
 import { Search, Bell, Settings, User } from 'lucide-react';
+import { useAuthStore } from '../stores/useAuthStore.js';
 
 
 const Header = ({ activeSection }) => {
+  const user = useAuthStore((state) => state.user);
+
   const getSectionTitle = (section) => {
     const titles = {
       dashboard: 'Dashboard',
@@ -16,6 +19,12 @@ const Header = ({ activeSection }) => {
       settings: 'Settings',
     };
     return titles[section] || 'Dashboard';
+  };
+
+  const getRoleLabel = (role) => {
+    if (role === 'admin') return 'Administrator';
+    if (role === 'roomOwner') return 'Room Owner';
+    return 'User';
   };
 
   return (
@@ -47,8 +56,8 @@ const Header = ({ activeSection }) => {
           
           <div className="flex items-center space-x-3 pl-4 border-l border-slate-200">
             <div className="text-right">
-              <p className="text-sm font-medium text-slate-800">John Doe</p>
-              <p className="text-xs text-slate-600">Administrator</p>
+              <p className="text-sm font-medium text-slate-800">{user?.username || 'John Doe'}</p>
+              <p className="text-xs text-slate-600">{getRoleLabel(user?.role)}</p>
             </div>
             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
               <User size={16} className="text-white" />

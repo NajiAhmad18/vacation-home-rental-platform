@@ -200,18 +200,83 @@ export default function BookingForm({ selectedDates, setSelectedDates, bookedDat
   return (
     <form onSubmit={handleSubmit} className="space-y-5" noValidate>
       {/* Guest info */}
-      <Field
-        icon={User} id="name" name="name" placeholder="Full Name"
-        value={form.name} onChange={handleChange} error={errors.name}
-      />
-      <Field
-        icon={Phone} id="phone" name="phone" type="tel" placeholder="Phone Number"
-        value={form.phone} onChange={handleChange} error={errors.phone}
-      />
-      <Field
-        icon={IdCard} id="idCard" name="idCard" placeholder="ID Card / Passport Number"
-        value={form.idCard} onChange={handleChange} error={errors.idCard}
-      />
+      <div>
+        <label htmlFor="name" className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+          Full Name
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <User className="h-4 w-4 text-gray-400" />
+          </div>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Full Name"
+            className={`input-premium pl-11 ${errors.name ? "error" : ""}`}
+          />
+        </div>
+        {errors.name && (
+          <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+            {errors.name}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="phone" className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+          Phone Number
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Phone className="h-4 w-4 text-gray-400" />
+          </div>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            value={form.phone}
+            onChange={handleChange}
+            placeholder="Phone Number"
+            className={`input-premium pl-11 ${errors.phone ? "error" : ""}`}
+          />
+        </div>
+        {errors.phone && (
+          <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+            {errors.phone}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="idCard" className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+          ID Card / Passport Number
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <IdCard className="h-4 w-4 text-gray-400" />
+          </div>
+          <input
+            id="idCard"
+            name="idCard"
+            type="text"
+            value={form.idCard}
+            onChange={handleChange}
+            placeholder="ID Card / Passport Number"
+            className={`input-premium pl-11 ${errors.idCard ? "error" : ""}`}
+          />
+        </div>
+        {errors.idCard && (
+          <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+            {errors.idCard}
+          </p>
+        )}
+      </div>
 
       {/* Date pickers */}
       <div>

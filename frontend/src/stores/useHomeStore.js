@@ -87,7 +87,9 @@ export const useHomeStore = create((set) => ({
       const formData = new FormData();
       const { images, existingImages, ...rest } = updatedData;
       formData.append("data", JSON.stringify(rest));
-      formData.append("existingImages", JSON.stringify(existingImages || []));
+      if (existingImages !== undefined) {
+        formData.append("existingImages", JSON.stringify(existingImages));
+      }
       if (images && images.length > 0) {
         images.forEach((file) => formData.append("images", file));
       }

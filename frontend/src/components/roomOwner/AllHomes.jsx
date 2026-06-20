@@ -3,7 +3,7 @@ import { MapPin, Star, Eye, Edit, Trash2, Plus, Archive } from "lucide-react";
 import { useHomeStore } from "../../stores/useHomeStore";
 import EditHomeModal from "./EditHomeModal";
 
-const AllHomes = () => {
+const AllHomes = ({ setActiveSection }) => {
   const { homes, getHomesByOwner, toggleAvailable, deleteHome, loading } = useHomeStore();
   const [selectedHome, setSelectedHome] = useState(null);
   const [viewMode, setViewMode] = useState(false);
@@ -37,7 +37,10 @@ const AllHomes = () => {
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
           My Properties
         </h1>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center shadow-sm">
+        <button
+          onClick={() => setActiveSection?.("add-home")}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center shadow-sm"
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Property
         </button>

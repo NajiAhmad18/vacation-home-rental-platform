@@ -34,6 +34,7 @@ app.use("/api/wishlist", wishlist);
 app.use("/api/ledger", ledger);
 app.use("/api/review", reviewRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/uploads", express.static("uploads"));
 app.use("/invoices", express.static(os.tmpdir()));
 app.use("/", invoiceHtmlRoutes);
 

@@ -7,14 +7,14 @@ import Revenue from "./Revenue";
 import Reviews from "./Reviews";
 import Settings from "./Settings";
 
-const ContentArea = ({ activeSection }) => {
+const ContentArea = ({ activeSection, setActiveSection }) => {
   switch (activeSection) {
     case "dashboard":
       return <Dashboard />;
     case "add-home":
       return <AddNewHome />;
     case "all-homes":
-      return <AllHomes />;
+      return <AllHomes setActiveSection={setActiveSection} />;
     case "active-bookings":
       return <ActiveBookings />;
     case "all-bookings":
